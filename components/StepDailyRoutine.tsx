@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from './Button';
 import { ArrowLeft, Sun, Briefcase, Moon } from 'lucide-react';
+import { useLanguage } from './LanguageContext';
 
 interface StepDailyRoutineProps {
     wakeTime: string;
@@ -19,6 +20,8 @@ export function StepDailyRoutine({
     sleepTime, setSleepTime,
     onNext, onBack
 }: StepDailyRoutineProps) {
+    const { t } = useLanguage();
+
     return (
         <div className="flex flex-col h-full p-6 bg-white text-[#192126]">
             {/* Header */}
@@ -26,7 +29,7 @@ export function StepDailyRoutine({
                 <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                     <ArrowLeft className="w-5 h-5 text-[#192126]" />
                 </button>
-                <span className="mx-auto text-lg font-bold">Daily Routine</span>
+                <span className="mx-auto text-lg font-bold">{t.step_routine_title}</span>
                 <div className="w-10"></div>
             </div>
 
@@ -46,14 +49,14 @@ export function StepDailyRoutine({
                 className="flex-1 space-y-6"
             >
                 <div>
-                    <h1 className="text-2xl font-black mb-2 tracking-tight">Your Typical Day</h1>
-                    <p className="text-[#5E6468] font-medium mb-8">We'll time your meals around your schedule.</p>
+                    <h1 className="text-2xl font-black mb-2 tracking-tight">{t.step_routine_subtitle}</h1>
+                    <p className="text-[#5E6468] font-medium mb-8">{t.step_routine_desc}</p>
                 </div>
 
                 {/* Wake Up */}
                 <div className="space-y-3">
                     <label className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                        <Sun className="w-4 h-4 text-orange-500" /> Wake Up Time
+                        <Sun className="w-4 h-4 text-orange-500" /> {t.label_wake}
                     </label>
                     <input
                         type="time"
@@ -66,7 +69,7 @@ export function StepDailyRoutine({
                 {/* Work/School Start */}
                 <div className="space-y-3">
                     <label className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                        <Briefcase className="w-4 h-4 text-blue-500" /> Work/School Starts
+                        <Briefcase className="w-4 h-4 text-blue-500" /> {t.label_work}
                     </label>
                     <input
                         type="time"
@@ -79,7 +82,7 @@ export function StepDailyRoutine({
                 {/* Sleep */}
                 <div className="space-y-3">
                     <label className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                        <Moon className="w-4 h-4 text-indigo-500" /> Sleep Time
+                        <Moon className="w-4 h-4 text-indigo-500" /> {t.label_sleep}
                     </label>
                     <input
                         type="time"
@@ -93,7 +96,7 @@ export function StepDailyRoutine({
 
             <div className="mt-4 pt-6 border-t border-gray-100">
                 <Button onClick={onNext} disabled={!wakeTime || !sleepTime}>
-                    Next
+                    {t.next}
                 </Button>
             </div>
         </div>

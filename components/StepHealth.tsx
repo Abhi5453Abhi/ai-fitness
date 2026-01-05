@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from './Button';
 import { ArrowLeft, ShieldAlert, Ban, Check } from 'lucide-react';
+import { useLanguage } from './LanguageContext';
 
 interface StepHealthProps {
     healthIssues: string[];
@@ -11,14 +12,30 @@ interface StepHealthProps {
     onBack: () => void;
 }
 
-const HEALTH_ISSUES = ["Diabetes", "Thyroid", "PCOS/PCOD", "Cholesterol", "Hypertension", "None"];
-const ALLERGIES = ["Lactose", "Gluten", "Nuts", "Soy", "Eggs", "None"];
+const HEALTH_ISSUES = [
+    { key: "Diabetes", labelKey: "condition_diabetes" },
+    { key: "Thyroid", labelKey: "condition_thyroid" },
+    { key: "PCOS/PCOD", labelKey: "condition_pcos" },
+    { key: "Cholesterol", labelKey: "condition_cholesterol" },
+    { key: "Hypertension", labelKey: "condition_hypertension" },
+    { key: "None", labelKey: "condition_none" }
+];
+
+const ALLERGIES = [
+    { key: "Lactose", labelKey: "allergy_lactose" },
+    { key: "Gluten", labelKey: "allergy_gluten" },
+    { key: "Nuts", labelKey: "allergy_nuts" },
+    { key: "Soy", labelKey: "allergy_soy" },
+    { key: "Eggs", labelKey: "allergy_eggs" },
+    { key: "None", labelKey: "allergy_none" }
+];
 
 export function StepHealth({
     healthIssues, setHealthIssues,
     allergies, setAllergies,
     onNext, onBack
 }: StepHealthProps) {
+    const { t } = useLanguage();
 
     const toggleHealth = (item: string) => {
         if (item === "None") {
@@ -55,7 +72,7 @@ export function StepHealth({
                 <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                     <ArrowLeft className="w-5 h-5 text-[#192126]" />
                 </button>
-                <span className="mx-auto text-lg font-bold">Health & Safety</span>
+                <span className="mx-auto text-lg font-bold">{t.step_health_title}</span>
                 <div className="w-10"></div>
             </div>
 
@@ -77,21 +94,21 @@ export function StepHealth({
                 {/* Health Issues */}
                 <div className="mb-8">
                     <h3 className="text-gray-400 font-bold uppercase tracking-wider text-xs mb-4 flex items-center gap-2">
-                        <ShieldAlert className="w-4 h-4" /> Health Conditions
+                        <ShieldAlert className="w-4 h-4" /> {t.label_conditions}
                     </h3>
                     <div className="flex flex-wrap gap-2">
                         {HEALTH_ISSUES.map(item => {
-                            const isSelected = healthIssues.includes(item);
+                            const isSelected = healthIssues.includes(item.key);
                             return (
                                 <button
-                                    key={item}
-                                    onClick={() => toggleHealth(item)}
+                                    key={item.key}
+                                    onClick={() => toggleHealth(item.key)}
                                     className={`px-5 py-3 rounded-full font-bold text-sm border-2 transition-all flex items-center gap-2 ${isSelected
-                                            ? 'bg-[#192126] border-[#192126] text-white shadow-lg'
-                                            : 'bg-white border-gray-100 text-[#192126] hover:border-gray-300'
+                                        ? 'bg-[#192126] border-[#192126] text-white shadow-lg'
+                                        : 'bg-white border-gray-100 text-[#192126] hover:border-gray-300'
                                         }`}
                                 >
-                                    {item}
+                                    {t[item.labelKey]}
                                     {isSelected && <Check className="w-4 h-4 text-[#BBF246]" />}
                                 </button>
                             )
@@ -102,21 +119,21 @@ export function StepHealth({
                 {/* Allergies */}
                 <div className="mb-8">
                     <h3 className="text-gray-400 font-bold uppercase tracking-wider text-xs mb-4 flex items-center gap-2">
-                        <Ban className="w-4 h-4" /> Allergies / Do Not Eat
+                        <Ban className="w-4 h-4" /> {t.label_allergies}
                     </h3>
                     <div className="flex flex-wrap gap-2">
                         {ALLERGIES.map(item => {
-                            const isSelected = allergies.includes(item);
+                            const isSelected = allergies.includes(item.key);
                             return (
                                 <button
-                                    key={item}
-                                    onClick={() => toggleAllergy(item)}
+                                    key={item.key}
+                                    onClick={() => toggleAllergy(item.key)}
                                     className={`px-5 py-3 rounded-full font-bold text-sm border-2 transition-all flex items-center gap-2 ${isSelected
-                                            ? 'bg-[#192126] border-[#192126] text-white shadow-lg'
-                                            : 'bg-white border-gray-100 text-[#192126] hover:border-gray-300'
+                                        ? 'bg-[#192126] border-[#192126] text-white shadow-lg'
+                                        : 'bg-white border-gray-100 text-[#192126] hover:border-gray-300'
                                         }`}
                                 >
-                                    {item}
+                                    {t[item.labelKey]}
                                     {isSelected && <Check className="w-4 h-4 text-[#BBF246]" />}
                                 </button>
                             );
@@ -127,7 +144,7 @@ export function StepHealth({
             </motion.div>
 
             <div className="mt-4 pt-6 border-t border-gray-100">
-                <Button onClick={onNext}>Next</Button>
+                <Button onClick={onNext}>{t.next}</Button>
             </div>
         </div>
     );

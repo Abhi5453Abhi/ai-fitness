@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useLanguage } from './LanguageContext';
 
 interface Step10ProcessingProps {
     userData: {
@@ -28,6 +29,7 @@ interface Step10ProcessingProps {
         barriers: string[];
         pledgeDays: number;
         userId: string;
+        language?: 'en' | 'pa';
     };
     setPlanData: (data: any) => void;
     onNext: () => void;
@@ -42,6 +44,7 @@ const QUOTES = [
 ];
 
 export function Step10Processing({ userData, setPlanData, onNext }: Step10ProcessingProps) {
+    const { t, language } = useLanguage();
     const [quoteIndex, setQuoteIndex] = useState(0);
 
     // Rotate quotes
@@ -55,7 +58,13 @@ export function Step10Processing({ userData, setPlanData, onNext }: Step10Proces
     const hasFetched = useRef(false);
 
     // Fetch Plan
+    // Fetch Plan
     useEffect(() => {
+        // Transition after 5 seconds
+        const timer = setTimeout(() => {
+            onNext();
+        }, 5000);
+
         const fetchPlan = async () => {
             if (hasFetched.current) return;
             hasFetched.current = true;
@@ -65,17 +74,14 @@ export function Step10Processing({ userData, setPlanData, onNext }: Step10Proces
                 const response = await fetch('/api/generate-plan', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(userData)
+                    body: JSON.stringify({ ...userData, language })
                 });
 
                 if (!response.ok) throw new Error("Failed to fetch");
 
                 const data = await response.json();
                 setPlanData(data);
-
-                setTimeout(() => {
-                    onNext();
-                }, 2000);
+                // Note: We do NOT call onNext here anymore, the timer handles it.
 
             } catch (error) {
                 console.error("Error generating plan:", error);
@@ -83,7 +89,8 @@ export function Step10Processing({ userData, setPlanData, onNext }: Step10Proces
         };
 
         fetchPlan();
-    }, []);
+        return () => clearTimeout(timer);
+    }, [userData, language, setPlanData, onNext]);
 
     return (
         <div className="flex flex-col h-full bg-transparent relative overflow-hidden items-center justify-center p-6 text-[#192126]">
@@ -101,13 +108,13 @@ export function Step10Processing({ userData, setPlanData, onNext }: Step10Proces
                         transition={{ duration: 4, times: [0, 0.3, 0.6, 1], repeat: Infinity }}
                         className="flex flex-col items-center gap-2"
                     >
-                        <span className="text-xl font-bold text-[#192126]">Analyzing your goals...</span>
-                        <span className="text-xl font-bold text-[#192126]">Your meal plan will be ready in 5-10 minutes...</span>
-                        <span className="text-xl font-bold text-[#192126]">Optimizing nutrition...</span>
+                        <span className="text-xl font-bold text-[#192126]">{t.analyzing_profile}</span>
+                        <span className="text-xl font-bold text-[#192126]">{t.generating_plan}</span>
+                        <span className="text-xl font-bold text-[#192126]">{t.crafting_meals}</span>
                     </motion.div>
                 </div>
 
-                {/* Rotating Quote */}
+                {/* Rotating Quote - Only showing in English for now as requested or fallback */}
                 <motion.div
                     key={quoteIndex}
                     initial={{ opacity: 0, y: 10 }}

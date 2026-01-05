@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from './Button';
 import { ArrowLeft, Check } from 'lucide-react';
+import { useLanguage } from './LanguageContext';
 
 interface StepRateProps {
     weeklyRate: string;
@@ -10,20 +11,22 @@ interface StepRateProps {
 }
 
 const RATES = [
-    { label: "Lose 0.2 kilograms per week", value: "0.2", recommended: true },
-    { label: "Lose 0.5 kilograms per week", value: "0.5", recommended: false },
-    { label: "Lose 0.8 kilograms per week", value: "0.8", recommended: false },
-    { label: "Lose 1 kilogram per week", value: "1.0", recommended: false },
+    { key: "rate_02", value: "0.2", recommended: true },
+    { key: "rate_05", value: "0.5", recommended: false },
+    { key: "rate_08", value: "0.8", recommended: false },
+    { key: "rate_10", value: "1.0", recommended: false },
 ];
 
 export function StepRate({ weeklyRate, setWeeklyRate, onNext, onBack }: StepRateProps) {
+    const { t } = useLanguage();
+
     return (
         <div className="flex flex-col h-full p-6 bg-white text-[#192126]">
             <div className="flex items-center mb-6">
                 <button onClick={onBack} className="p-2 rounded-full bg-[#1F2937] hover:bg-[#374151]">
                     <ArrowLeft className="w-5 h-5 text-white" />
                 </button>
-                <span className="mx-auto text-lg font-medium">Goal</span>
+                <span className="mx-auto text-lg font-medium">{t.step_rate_title}</span>
                 <div className="w-10"></div>
             </div>
 
@@ -44,7 +47,7 @@ export function StepRate({ weeklyRate, setWeeklyRate, onNext, onBack }: StepRate
                 animate={{ opacity: 1, y: 0 }}
                 className="flex-1"
             >
-                <h1 className="text-2xl font-bold mb-6">What is your weekly goal?</h1>
+                <h1 className="text-2xl font-bold mb-6">{t.step_rate_subtitle}</h1>
 
                 <div className="space-y-3">
                     {RATES.map((item) => (
@@ -57,9 +60,9 @@ export function StepRate({ weeklyRate, setWeeklyRate, onNext, onBack }: StepRate
                                 }`}
                         >
                             <div className="flex flex-col">
-                                <span className="font-medium text-white">{item.label}</span>
+                                <span className="font-medium text-white">{t[item.key]}</span>
                                 {item.recommended && (
-                                    <span className="text-xs text-gray-400 mt-0.5">(Recommended)</span>
+                                    <span className="text-xs text-gray-400 mt-0.5">{t.recommended}</span>
                                 )}
                             </div>
                             <div className={`w-6 h-6 rounded-full border flex items-center justify-center ${weeklyRate === item.value ? 'bg-blue-500 border-blue-500' : 'border-gray-600'
@@ -73,7 +76,7 @@ export function StepRate({ weeklyRate, setWeeklyRate, onNext, onBack }: StepRate
 
             <div className="mt-auto">
                 <Button onClick={onNext} disabled={!weeklyRate}>
-                    Next
+                    {t.next}
                 </Button>
             </div>
         </div>

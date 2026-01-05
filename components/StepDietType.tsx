@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from './Button';
 import { ArrowLeft, Leaf, Beef, Egg, CandyOff } from 'lucide-react';
+import { useLanguage } from './LanguageContext';
 
 interface StepDietTypeProps {
     dietType: string;
@@ -10,13 +11,13 @@ interface StepDietTypeProps {
 }
 
 const DIET_TYPES = [
-    { id: 'vegetarian', label: 'Vegetarian', icon: <Leaf className="w-5 h-5" />, description: 'No meat, egg optional' },
-    { id: 'non-vegetarian', label: 'Non-Vegetarian', icon: <Beef className="w-5 h-5" />, description: 'I eat everything' },
-    { id: 'eggetarian', label: 'Eggetarian', icon: <Egg className="w-5 h-5" />, description: 'Veg + Eggs' },
-    { id: 'vegan', label: 'Vegan', icon: <CandyOff className="w-5 h-5" />, description: 'No animal products' }
+    { id: 'vegetarian', key: 'diet_vegetarian', descKey: 'diet_vegetarian_desc', icon: <Leaf className="w-5 h-5" /> },
+    { id: 'vegan', key: 'diet_vegan', descKey: 'diet_vegan_desc', icon: <CandyOff className="w-5 h-5" /> }
 ];
 
 export function StepDietType({ dietType, setDietType, onNext, onBack }: StepDietTypeProps) {
+    const { t } = useLanguage();
+
     return (
         <div className="flex flex-col h-full p-6 bg-white text-[#192126]">
             {/* Header */}
@@ -24,7 +25,7 @@ export function StepDietType({ dietType, setDietType, onNext, onBack }: StepDiet
                 <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                     <ArrowLeft className="w-5 h-5 text-[#192126]" />
                 </button>
-                <span className="mx-auto text-lg font-bold">Diet Preference</span>
+                <span className="mx-auto text-lg font-bold">{t.step_diet_title}</span>
                 <div className="w-10"></div>
             </div>
 
@@ -43,8 +44,8 @@ export function StepDietType({ dietType, setDietType, onNext, onBack }: StepDiet
                 animate={{ opacity: 1, y: 0 }}
                 className="flex-1"
             >
-                <h1 className="text-2xl font-black mb-2 tracking-tight">Do you eat meat?</h1>
-                <p className="text-[#5E6468] font-medium mb-8">This helps us recommend the right protein sources.</p>
+                <h1 className="text-2xl font-black mb-2 tracking-tight">{t.step_diet_subtitle}</h1>
+                <p className="text-[#5E6468] font-medium mb-8">{t.step_diet_desc}</p>
 
                 <div className="space-y-3">
                     {DIET_TYPES.map((type) => (
@@ -52,8 +53,8 @@ export function StepDietType({ dietType, setDietType, onNext, onBack }: StepDiet
                             key={type.id}
                             onClick={() => setDietType(type.id)}
                             className={`w-full p-4 rounded-2xl border-2 flex items-center justify-between transition-all ${dietType === type.id
-                                    ? 'border-[#192126] bg-[#192126] text-white shadow-lg'
-                                    : 'border-gray-100 bg-white hover:border-gray-200'
+                                ? 'border-[#192126] bg-[#192126] text-white shadow-lg'
+                                : 'border-gray-100 bg-white hover:border-gray-200'
                                 }`}
                         >
                             <div className="flex items-center gap-4">
@@ -61,9 +62,9 @@ export function StepDietType({ dietType, setDietType, onNext, onBack }: StepDiet
                                     {type.icon}
                                 </div>
                                 <div className="text-left">
-                                    <div className="font-bold">{type.label}</div>
+                                    <div className="font-bold">{t[type.key]}</div>
                                     <div className={`text-xs ${dietType === type.id ? 'text-gray-300' : 'text-gray-400'}`}>
-                                        {type.description}
+                                        {t[type.descKey]}
                                     </div>
                                 </div>
                             </div>
@@ -78,7 +79,7 @@ export function StepDietType({ dietType, setDietType, onNext, onBack }: StepDiet
 
             <div className="mt-4 pt-6 border-t border-gray-100">
                 <Button onClick={onNext} disabled={!dietType}>
-                    Next
+                    {t.next}
                 </Button>
             </div>
         </div>

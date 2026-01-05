@@ -3,6 +3,7 @@ import { Button } from './Button';
 import { ArrowLeft } from 'lucide-react';
 import { TapeMeasure } from './TapeMeasure';
 import { useState } from 'react';
+import { useLanguage } from './LanguageContext';
 
 interface Step5MetricsProps {
     height: number;
@@ -14,6 +15,7 @@ interface Step5MetricsProps {
 }
 
 export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onBack }: Step5MetricsProps) {
+    const { t } = useLanguage();
     const [focusedInput, setFocusedInput] = useState<'height' | 'weight' | null>(null);
 
     return (
@@ -22,7 +24,7 @@ export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onB
                 <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                     <ArrowLeft className="w-5 h-5 text-[#192126]" />
                 </button>
-                <span className="mx-auto text-lg font-bold">Metrics</span>
+                <span className="mx-auto text-lg font-bold">{t.step5_title}</span>
                 <div className="w-10"></div>
             </div>
 
@@ -41,7 +43,7 @@ export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onB
 
                 {/* Height Section */}
                 <div className="flex flex-col items-center">
-                    <label className="text-gray-400 font-bold uppercase tracking-wider text-xs mb-2">Height</label>
+                    <label className="text-gray-400 font-bold uppercase tracking-wider text-xs mb-2">{t.label_height}</label>
                     <div className="relative flex items-end justify-center mb-6">
                         <input
                             type="number"
@@ -51,7 +53,7 @@ export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onB
                             onBlur={() => setFocusedInput(null)}
                             className={`text-7xl font-black bg-transparent text-center w-48 outline-none p-0 m-0 ${focusedInput === 'height' ? 'text-[#BBF246]' : 'text-[#192126]'} transition-colors`}
                         />
-                        <span className="text-xl text-gray-400 font-bold mb-4 ml-1">cm</span>
+                        <span className="text-xl text-gray-400 font-bold mb-4 ml-1">{t.unit_cm}</span>
                     </div>
 
                     <div className="w-full h-24 relative opacity-50 hover:opacity-100 transition-opacity">
@@ -72,7 +74,7 @@ export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onB
 
                 {/* Weight Section */}
                 <div className="flex flex-col items-center">
-                    <label className="text-gray-400 font-bold uppercase tracking-wider text-xs mb-2">Weight</label>
+                    <label className="text-gray-400 font-bold uppercase tracking-wider text-xs mb-2">{t.label_weight}</label>
                     <div className="relative flex items-end justify-center mb-6">
                         <input
                             type="number"
@@ -82,7 +84,7 @@ export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onB
                             onBlur={() => setFocusedInput(null)}
                             className={`text-7xl font-black bg-transparent text-center w-48 outline-none p-0 m-0 ${focusedInput === 'weight' ? 'text-[#BBF246]' : 'text-[#192126]'} transition-colors`}
                         />
-                        <span className="text-xl text-gray-400 font-bold mb-4 ml-1">kg</span>
+                        <span className="text-xl text-gray-400 font-bold mb-4 ml-1">{t.unit_kg}</span>
                     </div>
 
                     <div className="w-full h-24 relative opacity-50 hover:opacity-100 transition-opacity">
@@ -105,7 +107,7 @@ export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onB
 
             <div className="mt-auto z-20 pt-6 border-t border-gray-100">
                 <Button onClick={onNext}>
-                    Next
+                    {t.next}
                 </Button>
             </div>
         </div>

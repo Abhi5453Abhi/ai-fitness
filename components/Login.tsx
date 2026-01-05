@@ -4,69 +4,55 @@ import type { ConfirmationResult } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, ArrowRight, CheckCircle, Loader2, ShieldCheck } from 'lucide-react';
+import { useLanguage } from './LanguageContext';
 
 interface LoginProps {
     onLoginSuccess: (token: string, uid: string) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
+    const { t, setLanguage, language } = useLanguage();
     const [phoneNumber, setPhoneNumber] = useState('');
     const [otp, setOtp] = useState('');
-    const [step, setStep] = useState<'PHONE' | 'OTP'>('PHONE');
+    const [step, setStep] = useState<'PHONE' | 'LANGUAGE' | 'OTP'>('PHONE');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [verificationResult, setVerificationResult] = useState<ConfirmationResult | null>(null);
-
-    /*
-    useEffect(() => {
-        const container = document.getElementById('recaptcha-container');
-        if (container && !window.recaptchaVerifier) {
-            try {
-                window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-                    'size': 'invisible',
-                    'callback': () => { }
-                });
-            } catch (error) {
-                console.error("Recaptcha init error:", error);
-            }
-        }
-        return () => {
-            if (window.recaptchaVerifier) {
-                try { window.recaptchaVerifier.clear(); } catch (e) { }
-                window.recaptchaVerifier = null;
-            }
-        };
-    }, []);
-    */
 
     const handleSendOtp = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-        setLoading(true);
+        // Validate phone
+        if (phoneNumber.length < 10) {
+            setError('Please enter a valid number');
+            return;
+        }
+        setStep('LANGUAGE');
+    };
 
-        // Simulate login delay
+    const handleLanguageSelect = (lang: 'en' | 'pa') => {
+        setLanguage(lang);
+        setLoading(true);
+        // Direct login, skipping OTP
         setTimeout(() => {
             setLoading(false);
-            // Bypass Firebase Auth for now
-            // Generate a mock token and UID using the phone number
             const mockToken = "mock-token-" + phoneNumber;
-            const mockUid = "user-" + phoneNumber.replace(/\D/g, '');
+            const mockUid = phoneNumber;
             onLoginSuccess(mockToken, mockUid);
-        }, 1000);
-    };
+        }, 800);
+    }
 
-    // Recaptcha and verify logic removed for now
-    const handleVerifyOtp = async (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log("Verify OTP called unexpectedly");
-    };
-    /*
-    const handleVerifyOtp = async (e: React.FormEvent) => {
-        // ... (commenting out verification logic)
-    };
-    */
+    // const handleVerifyOtp = async (e: React.FormEvent) => {
+    //     e.preventDefault();
+    //     setError('');
+    //     setLoading(true);
 
-    const isPhoneStep = step === 'PHONE';
+    //     setTimeout(() => {
+    //         setLoading(false);
+    //         const mockToken = "mock-token-" + phoneNumber;
+    //         const mockUid = phoneNumber; // Use phone number as ID for DB
+    //         onLoginSuccess(mockToken, mockUid);
+    //     }, 1000);
+    // };
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-white text-[#192126]">
@@ -82,15 +68,19 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                         <ShieldCheck className="w-10 h-10 text-[#192126]" />
                     </div>
                     <h1 className="text-3xl font-black text-[#192126] mb-2 tracking-tight">
-                        {isPhoneStep ? 'Welcome Back' : 'Verify Code'}
+                        {step === 'PHONE' && t.welcome_back}
+                        {step === 'LANGUAGE' && t.select_language}
+                        {step === 'OTP' && t.verify_code}
                     </h1>
                     <p className="text-[#5E6468] font-medium">
-                        {isPhoneStep ? 'Enter your number to start your journey.' : `We sent a code to ${phoneNumber}`}
+                        {step === 'PHONE' && t.enter_mobile}
+                        {step === 'LANGUAGE' && t.choose_preferred}
+                        {step === 'OTP' && `${t.sent_code_to} ${phoneNumber}`}
                     </p>
                 </div>
 
                 <AnimatePresence mode="wait">
-                    {isPhoneStep ? (
+                    {step === 'PHONE' && (
                         <motion.form
                             key="phone-form"
                             initial={{ opacity: 0, x: -20 }}
@@ -100,7 +90,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                             className="space-y-6"
                         >
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-[#192126] ml-1">Mobile Number</label>
+                                <label className="text-sm font-bold text-[#192126] ml-1">{t.mobile_number}</label>
                                 <div className="relative group">
                                     <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#192126] transition-colors" />
                                     <input
@@ -114,29 +104,63 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                                 </div>
                             </div>
 
-                            <div id="recaptcha-container"></div>
-
                             <button
                                 type="submit"
                                 disabled={loading}
                                 className="w-full btn-primary py-4 text-lg flex items-center justify-center gap-2 disabled:opacity-50"
                             >
                                 {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : (
-                                    <>Login <ArrowRight className="w-5 h-5" /></>
+                                    <>{t.continue || 'Continue'} <ArrowRight className="w-5 h-5" /></>
                                 )}
                             </button>
                         </motion.form>
-                    ) : (
+                    )}
+
+                    {step === 'LANGUAGE' && (
+                        <motion.div
+                            key="lang-select"
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            className="space-y-4"
+                        >
+                            <button
+                                onClick={() => handleLanguageSelect('en')}
+                                className="w-full p-6 rounded-3xl border-2 border-gray-100 hover:border-[#BBF246] hover:bg-[#BBF246]/10 transition-all group flex items-center justify-between"
+                            >
+                                <span className="text-xl font-bold">English</span>
+                                <div className={`w-6 h-6 rounded-full border-2 ${language === 'en' ? 'bg-[#BBF246] border-[#BBF246]' : 'border-gray-300'}`} />
+                            </button>
+
+                            <button
+                                onClick={() => handleLanguageSelect('pa')}
+                                className="w-full p-6 rounded-3xl border-2 border-gray-100 hover:border-[#BBF246] hover:bg-[#BBF246]/10 transition-all group flex items-center justify-between"
+                            >
+                                <span className="text-xl font-bold">ਪੰਜਾਬੀ</span>
+                                <div className={`w-6 h-6 rounded-full border-2 ${language === 'pa' ? 'bg-[#BBF246] border-[#BBF246]' : 'border-gray-300'}`} />
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setStep('PHONE')}
+                                className="w-full text-sm font-bold text-[#5E6468] hover:text-[#192126] transition-colors mt-4"
+                            >
+                                {t.back}
+                            </button>
+                        </motion.div>
+                    )}
+
+                    {/* {step === 'OTP' && (
                         <motion.form
                             key="otp-form"
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -20 }}
-                            onSubmit={handleVerifyOtp}
+                             // onSubmit={handleVerifyOtp}
                             className="space-y-8"
                         >
                             <div className="space-y-4">
-                                <label className="text-sm font-bold text-[#192126] block text-center uppercase tracking-widest">Enter Verification Code</label>
+                                <label className="text-sm font-bold text-[#192126] block text-center uppercase tracking-widest">{t.enter_verification_code}</label>
                                 <input
                                     type="text"
                                     value={otp}
@@ -154,19 +178,19 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                                 className="w-full btn-primary py-4 text-lg flex items-center justify-center gap-2"
                             >
                                 {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : (
-                                    <>Verify & Login <CheckCircle className="w-5 h-5" /></>
+                                    <>{t.verify_and_login} <CheckCircle className="w-5 h-5" /></>
                                 )}
                             </button>
 
                             <button
                                 type="button"
-                                onClick={() => setStep('PHONE')}
+                                onClick={() => setStep('LANGUAGE')}
                                 className="w-full text-sm font-bold text-[#5E6468] hover:text-[#192126] transition-colors"
                             >
-                                Change Phone Number
+                                {t.change_phone}
                             </button>
                         </motion.form>
-                    )}
+                    )} */}
                 </AnimatePresence>
 
                 {error && (

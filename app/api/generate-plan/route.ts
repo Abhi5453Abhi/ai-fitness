@@ -23,6 +23,8 @@ interface UserRequest {
     waterIntake: boolean
     healthIssues: string[]
     allergies: string[]
+    language?: 'en' | 'pa'
+    userId: string
 }
 
 interface Meal {
@@ -54,6 +56,9 @@ interface AIPlanResponse {
 }
 
 import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/db';
+import { users, plans } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
     try {
@@ -83,6 +88,10 @@ export async function POST(request: NextRequest) {
             }
             return NextResponse.json(mockPlan)
         }
+
+        const languageInstruction = req.language === 'pa'
+            ? "IMPORTANT: Output all values (name, description, message, goalSummary) in Punjabi (Gurmukhi script). Keep JSON keys in English."
+            : "Output all text in English.";
 
         // Construct prompt for OpenAI
         const prompt = `
@@ -115,6 +124,7 @@ export async function POST(request: NextRequest) {
       3. AVOID ALLERGENS: ${req.allergies.join(', ')}.
       4. Plan meal timings based on Wake/Sleep schedule in description.
       5. Provide variety across 7 days.
+      6. ${languageInstruction}
 
       Return ONLY a JSON object with this EXACT structure:
       {
@@ -180,6 +190,34 @@ export async function POST(request: NextRequest) {
 
         // Parse and return the plan
         const plan: AIPlanResponse = JSON.parse(content)
+
+        // Save to Database
+        try {
+            // 1. Ensure User Exists (Upsert with Name)
+            await db.insert(users).values({
+                mobile: req.userId,
+                name: req.name
+            }).onConflictDoUpdate({
+                target: users.mobile,
+                set: { name: req.name }
+            });
+
+            // 2. Get User ID (integer)
+            const userRecord = await db.query.users.findFirst({
+                where: eq(users.mobile, req.userId)
+            });
+
+            if (userRecord) {
+                // 3. Save Plan
+                await db.insert(plans).values({
+                    userId: userRecord.id,
+                    planData: plan as any // Cast JSON
+                });
+            }
+        } catch (dbError) {
+            console.error("Database Save Error:", dbError);
+            // Don't fail the request if DB save fails, just log it.
+        }
 
         return NextResponse.json(plan)
     } catch (error) {

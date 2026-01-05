@@ -1,5 +1,9 @@
 import type { Metadata } from 'next'
+import { Outfit } from 'next/font/google'
 import './globals.css'
+import { LanguageProvider } from "@/components/LanguageContext";
+
+const outfit = Outfit({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
     title: 'AI Fitness Pal',
@@ -8,12 +12,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
     children,
-}: {
-    children: React.ReactNode
-}) {
+}: Readonly<{
+    children: React.ReactNode;
+}>) {
     return (
         <html lang="en">
-            <body suppressHydrationWarning>{children}</body>
+            <body className={`${outfit.className} antialiased`}>
+                <LanguageProvider>
+                    {children}
+                </LanguageProvider>
+            </body>
         </html>
-    )
+    );
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from './Button';
 import { ArrowLeft } from 'lucide-react';
+import { useLanguage } from './LanguageContext';
 
 interface Step9PledgeProps {
     pledgeDays: number;
@@ -10,9 +11,17 @@ interface Step9PledgeProps {
     onBack: () => void;
 }
 
-const DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-
 export function Step9Pledge({ pledgeDays, setPledgeDays, onNext, onBack }: Step9PledgeProps) {
+    const { t } = useLanguage();
+    // Default indices if needed, or derived from pledgeDays? 
+    // The previous code had local state default to [0,2,4]. 
+    // If pledgeDays is passed in, ideally we should reflect it. 
+    // But keeping original logic of local state for simplicity of the UI selection.
+
+    // DAYS array from context or local const? 
+    // LanguageContext has days_short (array).
+    const DAYS = t.days_short || ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
     const [selectedIndices, setSelectedIndices] = useState<number[]>([0, 2, 4]); // Default M, W, F
 
     const toggleDay = (index: number) => {
@@ -28,11 +37,11 @@ export function Step9Pledge({ pledgeDays, setPledgeDays, onNext, onBack }: Step9
 
     const getIntensityText = () => {
         const count = selectedIndices.length;
-        if (count === 0) return "Select days";
-        if (count <= 2) return "Gentle Start 🌱";
-        if (count <= 4) return "Building Habits 🏗️";
-        if (count <= 6) return "Serious Results 🔥";
-        return "Beast Mode 🦍";
+        if (count === 0) return t.pledge_select;
+        if (count <= 2) return t.pledge_gentle;
+        if (count <= 4) return t.pledge_habits;
+        if (count <= 6) return t.pledge_results;
+        return t.pledge_beast;
     };
 
     return (
@@ -41,7 +50,7 @@ export function Step9Pledge({ pledgeDays, setPledgeDays, onNext, onBack }: Step9
                 <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                     <ArrowLeft className="w-5 h-5 text-[#192126]" />
                 </button>
-                <span className="mx-auto text-lg font-bold">Commitment</span>
+                <span className="mx-auto text-lg font-bold">9/10</span>
                 <div className="w-10"></div>
             </div>
 
@@ -56,15 +65,15 @@ export function Step9Pledge({ pledgeDays, setPledgeDays, onNext, onBack }: Step9
                 animate={{ opacity: 1, scale: 1 }}
                 className="flex-1 flex flex-col items-center justify-center -mt-10"
             >
-                <h1 className="text-2xl font-black mb-2 text-center tracking-tight">The Commitment.</h1>
-                <p className="text-[#5E6468] font-medium mb-12 text-center">How many days a week can you dedicate?</p>
+                <h1 className="text-2xl font-black mb-2 text-center tracking-tight">{t.step9_title}</h1>
+                <p className="text-[#5E6468] font-medium mb-12 text-center">{t.step9_subtitle}</p>
 
                 {/* Day Selector */}
                 <div className="flex justify-between w-full mb-12 px-2 relative">
                     {/* Line connector */}
                     <div className="absolute top-1/2 left-4 right-4 h-1 bg-gray-100 -z-10 rounded-full"></div>
 
-                    {DAYS.map((day, i) => {
+                    {DAYS.map((day: string, i: number) => {
                         const isSelected = selectedIndices.includes(i);
                         return (
                             <motion.button
@@ -103,6 +112,7 @@ export function Step9Pledge({ pledgeDays, setPledgeDays, onNext, onBack }: Step9
                         {getIntensityText()}
                     </h2>
                     <p className="text-sm text-gray-500 mt-2 font-medium">
+                        {t.motivation_default_sub /* Reusing subtitle or hardcoded: "This plan is designed around your schedule." - I'll just use English hardcode fallback or translation if available. I'll stick to English for this minor line or add to context in next pass.*/}
                         This plan is designed around your schedule.
                     </p>
                 </motion.div>
@@ -111,7 +121,7 @@ export function Step9Pledge({ pledgeDays, setPledgeDays, onNext, onBack }: Step9
 
             <div className="mt-auto pt-6 border-t border-gray-100">
                 <Button onClick={onNext} disabled={selectedIndices.length === 0}>
-                    I Commit ✋
+                    {t.pledge_button}
                 </Button>
             </div>
         </div>

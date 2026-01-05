@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from './Button';
 import { ArrowLeft, Armchair, Footprints, Zap, Flame } from 'lucide-react';
+import { useLanguage } from './LanguageContext';
 
 interface Step7ActivityProps {
     activityLevel: string;
@@ -10,13 +11,14 @@ interface Step7ActivityProps {
 }
 
 const ACTIVITIES = [
-    { level: 'Sedentary', desc: 'Little or no exercise', icon: Armchair },
-    { level: 'Lightly Active', desc: 'Exercise 1-3 times/week', icon: Footprints },
-    { level: 'Active', desc: 'Exercise 3-5 times/week', icon: Zap },
-    { level: 'Very Active', desc: 'Hard exercise 6-7 days/week', icon: Flame },
+    { level: 'Sedentary', key: 'activity_sedentary', descKey: 'desc_sedentary', icon: Armchair },
+    { level: 'Lightly Active', key: 'activity_light', descKey: 'desc_light', icon: Footprints },
+    { level: 'Active', key: 'activity_active', descKey: 'desc_active', icon: Zap },
+    { level: 'Very Active', key: 'activity_very', descKey: 'desc_very', icon: Flame },
 ];
 
 export function Step7Activity({ activityLevel, setActivityLevel, onNext, onBack }: Step7ActivityProps) {
+    const { t } = useLanguage();
 
     return (
         <div className="flex flex-col h-full p-6 bg-white text-[#192126]">
@@ -24,15 +26,18 @@ export function Step7Activity({ activityLevel, setActivityLevel, onNext, onBack 
                 <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                     <ArrowLeft className="w-5 h-5 text-[#192126]" />
                 </button>
-                <span className="mx-auto text-lg font-bold">Activity</span>
+                <span className="mx-auto text-lg font-bold">{t.step_activity_header}</span>
                 <div className="w-10"></div>
             </div>
 
             <div className="flex gap-1 mb-6">
-                {[...Array(6)].map((_, i) => (
+                {/* Progress Bar - Step 13 of ~16 */}
+                {[...Array(13)].map((_, i) => (
                     <div key={i} className="h-1 flex-1 bg-[#BBF246] rounded-full"></div>
                 ))}
-                <div className="h-1 flex-1 bg-gray-100 rounded-full"></div>
+                {[...Array(3)].map((_, i) => (
+                    <div key={i} className="h-1 flex-1 bg-gray-100 rounded-full"></div>
+                ))}
             </div>
 
             <motion.div
@@ -40,8 +45,8 @@ export function Step7Activity({ activityLevel, setActivityLevel, onNext, onBack 
                 animate={{ opacity: 1, y: 0 }}
                 className="flex-1 overflow-y-auto no-scrollbar"
             >
-                <h1 className="text-2xl font-black mb-2 tracking-tight">Your daily rhythm.</h1>
-                <p className="text-[#5E6468] font-medium mb-8">How active are you right now?</p>
+                <h1 className="text-2xl font-black mb-2 tracking-tight">{t.step_activity_title}</h1>
+                <p className="text-[#5E6468] font-medium mb-8">{t.step_activity_subtitle}</p>
 
                 <div className="space-y-4">
                     {ACTIVITIES.map((act) => {
@@ -62,9 +67,9 @@ export function Step7Activity({ activityLevel, setActivityLevel, onNext, onBack 
 
                                 <div className="flex-1 z-10">
                                     <h3 className={`font-bold text-lg ${activityLevel === act.level ? 'text-white' : 'text-[#192126]'}`}>
-                                        {act.level}
+                                        {t[act.key]}
                                     </h3>
-                                    <p className={`text-sm ${activityLevel === act.level ? 'text-gray-400' : 'text-gray-500'}`}>{act.desc}</p>
+                                    <p className={`text-sm ${activityLevel === act.level ? 'text-gray-400' : 'text-gray-500'}`}>{t[act.descKey]}</p>
                                 </div>
 
                                 {/* Animated Selection Circle */}
@@ -81,7 +86,7 @@ export function Step7Activity({ activityLevel, setActivityLevel, onNext, onBack 
 
             <div className="mt-4 pt-6 border-t border-gray-100">
                 <Button onClick={onNext} disabled={!activityLevel}>
-                    Next
+                    {t.next}
                 </Button>
             </div>
         </div>
