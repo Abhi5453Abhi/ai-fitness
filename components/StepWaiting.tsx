@@ -11,16 +11,16 @@ interface StepWaitingProps {
 export function StepWaiting({ targetTime, onComplete }: StepWaitingProps) {
     const { t } = useLanguage();
 
-    // Calculate initial time left
-    const calculateTimeLeft = () => {
-        const diff = targetTime - Date.now();
-        return Math.max(0, diff);
-    };
-
     const [timeLeft, setTimeLeft] = useState(0);
 
     // Initial load and interval
     useEffect(() => {
+        // Calculate initial time left
+        const calculateTimeLeft = () => {
+            const diff = targetTime - Date.now();
+            return Math.max(0, diff);
+        };
+
         const initial = calculateTimeLeft();
         setTimeLeft(initial);
 

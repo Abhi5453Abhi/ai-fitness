@@ -7,7 +7,7 @@ type Language = 'en' | 'pa';
 interface LanguageContextType {
     language: Language;
     setLanguage: (lang: Language) => void;
-    t: Record<string, string>;
+    t: any;
 }
 
 const translations = {
@@ -85,8 +85,10 @@ const translations = {
         // Step 5: Metrics (Height/Weight)
         step5_title: "Your Body Metrics",
         step5_subtitle: "Used to calculate your metabolic rate.",
-        height_label: "Height",
-        weight_label: "Weight",
+        label_height: "Height",
+        label_weight: "Weight",
+        unit_cm: "cm",
+        unit_kg: "kg",
 
         // Step 6: Target
         step6_title: "What represents success?",
@@ -101,45 +103,7 @@ const translations = {
         rate_recommended: "Recommended (0.5 kg/week)",
         rate_aggressive: "Aggressive (1 kg/week)",
 
-        // Step 8: Diet Type
-        step8_title: "Dietary Preferences",
-        step8_subtitle: "What kind of food do you prefer?",
-        diet_veg: "Vegetarian",
-        diet_nonveg: "Non-Vegetarian",
-        diet_vegan: "Vegan",
-        diet_eggitarian: "Eggitarian",
 
-        // Step 9: Current Food
-        step9_title: "Current Nutrition",
-        step9_subtitle: "What did you eat yesterday?",
-        meal_breakfast: "Breakfast",
-        meal_lunch: "Lunch",
-        meal_dinner: "Dinner",
-        question_junk: "Do you eat junk food often?",
-        question_milk: "Do you drink milk daily?",
-        question_water: "Do you drink enough water?",
-        yes: "Yes",
-        no: "No",
-
-        // Step 10: Routine
-        step10_title: "Daily Schedule",
-        step10_subtitle: "We'll align meals with your day.",
-        wake_time: "Wake up time",
-        work_time: "Work start time",
-        sleep_time: "Bedtime",
-
-        // Step 11: Health
-        step11_title: "Health Check",
-        step11_subtitle: "Any conditions we should know about?",
-        health_diabetes: "Diabetes",
-        health_pcos: "PCOS/PCOD",
-        health_thyroid: "Thyroid",
-        health_cholesterol: "Cholesterol",
-        health_none: "None",
-        allergies_title: "Any Allergies?",
-        allergy_gluten: "Gluten",
-        allergy_lactose: "Lactose",
-        allergy_nuts: "Nuts",
 
         // Step 12: Habits
         step_habits_header: "Goals",
@@ -179,20 +143,6 @@ const translations = {
         activity_very: "Very Active",
         desc_very: "Hard exercise 6-7 days/week",
 
-        // Step 14: Barriers
-        step14_title: "Challenges",
-        step14_subtitle: "What stops you from reaching goals?",
-        barrier_time: "Lack of Time",
-        barrier_motivation: "Lack of Motivation",
-        barrier_knowledge: "Don't know what to eat",
-        barrier_cravings: "Food Cravings",
-
-        // Step 5: Metrics
-        step5_title: "Metrics",
-        label_height: "Height",
-        label_weight: "Weight",
-        unit_cm: "cm",
-        unit_kg: "kg",
 
         // Step Rate (Weekly Goal)
         step_rate_title: "Goal",
@@ -374,8 +324,10 @@ const translations = {
         // Step 5: Metrics
         step5_title: "ਤੁਹਾਡੇ ਸਰੀਰ ਦੇ ਮਾਪ",
         step5_subtitle: "ਤੁਹਾਡੀ ਪਾਚਨ ਦਰ (metabolic rate) ਲਈ ਜ਼ਰੂਰੀ।",
-        height_label: "ਕੱਦ (Height)",
-        weight_label: "ਭਾਰ (Weight)",
+        label_height: "ਕੱਦ (Height)",
+        label_weight: "ਭਾਰ (Weight)",
+        unit_cm: "ਸੈ.ਮੀ.",
+        unit_kg: "ਕਿਲੋ",
 
         // Step 6: Target
         step6_title: "ਸਫਲਤਾ ਕੀ ਹੈ?",
@@ -390,45 +342,7 @@ const translations = {
         rate_recommended: "ਸਿਫਾਰਸ਼ ਕੀਤੀ (0.5 ਕਿਲੋ/ਹਫ਼ਤਾ)",
         rate_aggressive: "ਤੇਜ਼ (1 ਕਿਲੋ/ਹਫ਼ਤਾ)",
 
-        // Step 8: Diet Type
-        step8_title: "ਖਾਣ-ਪੀਣ ਦੀਆਂ ਤਰਜੀਹਾਂ",
-        step8_subtitle: "ਤੁਸੀਂ ਕਿਸ ਤਰ੍ਹਾਂ ਦਾ ਭੋਜਨ ਪਸੰਦ ਕਰਦੇ ਹੋ?",
-        diet_veg: "ਸ਼ਾਕਾਹਾਰੀ",
-        diet_nonveg: "ਮਾਸਾਹਾਰੀ",
-        diet_vegan: "ਵੀਗਨ",
-        diet_eggitarian: "ਅੰਡੇ ਵਾਲਾ",
 
-        // Step 9: Current Food
-        step9_title: "ਮੌਜੂਦਾ ਖੁਰਾਕ",
-        step9_subtitle: "ਤੁਸੀਂ ਕੱਲ੍ਹ ਕੀ ਖਾਧਾ ਸੀ?",
-        meal_breakfast: "ਨਾਸ਼ਤਾ",
-        meal_lunch: "ਦੁਪਹਿਰ ਦਾ ਖਾਣਾ",
-        meal_dinner: "ਰਾਤ ਦਾ ਖਾਣਾ",
-        question_junk: "ਕੀ ਤੁਸੀਂ ਅਕਸਰ ਜੰਕ ਫੂਡ ਖਾਂਦੇ ਹੋ?",
-        question_milk: "ਕੀ ਤੁਸੀਂ ਰੋਜ਼ ਦੁੱਧ ਪੀਂਦੇ ਹੋ?",
-        question_water: "ਕੀ ਤੁਸੀਂ ਕਾਫ਼ੀ ਪਾਣੀ ਪੀਂਦੇ ਹੋ?",
-        yes: "ਹਾਂ",
-        no: "ਨਹੀਂ",
-
-        // Step 10: Routine
-        step10_title: "ਰੋਜ਼ਾਨਾ ਅਨੁਸੂਚੀ",
-        step10_subtitle: "ਅਸੀਂ ਤੁਹਾਡੇ ਦਿਨ ਦੇ ਹਿਸਾਬ ਨਾਲ ਭੋਜਨ ਤੈਅ ਕਰਾਂਗੇ।",
-        wake_time: "ਉੱਠਣ ਦਾ ਸਮਾਂ",
-        work_time: "ਕੰਮ ਸ਼ੁਰੂ ਕਰਨ ਦਾ ਸਮਾਂ",
-        sleep_time: "ਸੌਣ ਦਾ ਸਮਾਂ",
-
-        // Step 11: Health
-        step11_title: "ਸਿਹਤ ਜਾਂਚ",
-        step11_subtitle: "ਕੋਈ ਬਿਮਾਰੀ ਜਿਸ ਬਾਰੇ ਸਾਨੂੰ ਪਤਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ?",
-        health_diabetes: "ਸ਼ੂਗਰ (Diabetes)",
-        health_pcos: "PCOS/PCOD",
-        health_thyroid: "ਥਾਇਰਾਇਡ",
-        health_cholesterol: "ਕੋਲੈਸਟ੍ਰੋਲ",
-        health_none: "ਕੋਈ ਨਹੀਂ",
-        allergies_title: "ਕੋਈ ਐਲਰਜੀ?",
-        allergy_gluten: "ਗਲੁਟਨ",
-        allergy_lactose: "ਲੈਕਟੋਜ਼",
-        allergy_nuts: "ਨਟਸ (ਮੇਵੇ)",
 
         // Step 12: Habits
         step_habits_header: "ਟੀਚੇ",
@@ -468,20 +382,6 @@ const translations = {
         activity_very: "ਬਹੁਤ ਸਰਗਰਮ",
         desc_very: "ਹਫ਼ਤੇ ਵਿੱਚ 6-7 ਦਿਨ ਸਖਤ ਕਸਰਤ",
 
-        // Step 14: Barriers
-        step14_title: "ਚੁਣੌਤੀਆਂ",
-        step14_subtitle: "ਤੁਹਾਨੂੰ ਟੀਚਿਆਂ ਤੱਕ ਪਹੁੰਚਣ ਤੋਂ ਕੀ ਰੋਕਦਾ ਹੈ?",
-        barrier_time: "ਸਮੇਂ ਦੀ ਕਮੀ",
-        barrier_motivation: "ਪ੍ਰੇਰਣਾ ਦੀ ਕਮੀ",
-        barrier_knowledge: "ਪਤਾ ਨਹੀਂ ਕੀ ਖਾਣਾ ਹੈ",
-        barrier_cravings: "ਖਾਣੇ ਦੀ ਲਾਲਸਾ",
-
-        // Step 5: Metrics
-        step5_title: "ਮਾਪ",
-        label_height: "ਕੱਦ (Height)",
-        label_weight: "ਭਾਰ (Weight)",
-        unit_cm: "ਸੈ.ਮੀ.",
-        unit_kg: "ਕਿਲੋ",
 
         // Step Rate (Weekly Goal)
         step_rate_title: "ਟੀਚਾ",
