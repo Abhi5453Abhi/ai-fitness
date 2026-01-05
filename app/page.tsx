@@ -17,6 +17,7 @@ import { Step7Activity } from '@/components/Step7Activity'
 import { Step8Barriers } from '@/components/Step8Barriers'
 import { Step9Pledge } from '@/components/Step9Pledge'
 import { Step10Processing } from '@/components/Step10Processing'
+import { StepWaiting } from '@/components/StepWaiting'
 import { Dashboard } from '@/components/Dashboard'
 import Login from '@/components/Login'
 import { BackgroundAnimation } from '@/components/BackgroundAnimation'
@@ -57,6 +58,7 @@ export default function Home() {
     const [barriers, setBarriers] = useState<string[]>([])
     const [pledgeDays, setPledgeDays] = useState(3)
     const [planData, setPlanData] = useState<any>(null)
+    const [planReadyTime, setPlanReadyTime] = useState<number | null>(null)
 
     // Persistence Logic
     const STORAGE_KEY = 'ai-fitness-pal-state'
@@ -99,6 +101,7 @@ export default function Home() {
                 setBarriers(parsed.barriers ?? [])
                 setPledgeDays(parsed.pledgeDays ?? 3)
                 setPlanData(parsed.planData ?? null)
+                setPlanReadyTime(parsed.planReadyTime ?? null)
             } catch (e) {
                 console.error("Failed to load state", e)
             }
@@ -140,7 +143,8 @@ export default function Home() {
             activityLevel,
             barriers,
             pledgeDays,
-            planData
+            planData,
+            planReadyTime
         }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave))
     }, [
@@ -172,7 +176,8 @@ export default function Home() {
         activityLevel,
         barriers,
         pledgeDays,
-        planData
+        planData,
+        planReadyTime
     ])
 
     const handleNext = () => {
@@ -266,10 +271,15 @@ export default function Home() {
                                     habits, activityLevel, barriers, pledgeDays, userId: userId || 'anonymous'
                                 }}
                                 setPlanData={setPlanData}
-                                onNext={() => setStep(17)}
+                                onNext={() => {
+                                    // 5-10 minute delay
+                                    const delay = (Math.floor(Math.random() * 6) + 5) * 60 * 1000;
+                                    setPlanReadyTime(Date.now() + delay);
+                                    setStep(17);
+                                }}
                             />
                         )}
-                        {step === 17 && <Dashboard planData={planData} />}
+                        {step === 17 && <Dashboard planData={planData} planReadyTime={planReadyTime} />}
                     </>
                 )}
 

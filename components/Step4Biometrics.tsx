@@ -2,6 +2,7 @@ import { useRef, useEffect } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { Button } from './Button';
 import { ArrowLeft, User } from 'lucide-react';
+import { useLanguage } from './LanguageContext';
 
 interface Step4BiometricsProps {
     gender: 'male' | 'female' | 'other' | null;
@@ -18,6 +19,7 @@ const PIXELS_PER_YEAR = 50;
 const TICKS = Array.from({ length: (MAX_AGE - MIN_AGE) + 1 }, (_, i) => MIN_AGE + i);
 
 export function Step4Biometrics({ gender, setGender, age, setAge, onNext, onBack }: Step4BiometricsProps) {
+    const { t } = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
     const x = useMotionValue(0);
     const smoothX = useSpring(x, { stiffness: 400, damping: 40 });
@@ -50,7 +52,7 @@ export function Step4Biometrics({ gender, setGender, age, setAge, onNext, onBack
                 <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                     <ArrowLeft className="w-5 h-5 text-[#192126]" />
                 </button>
-                <span className="mx-auto text-lg font-bold">Biometrics</span>
+                <span className="mx-auto text-lg font-bold">4/10</span>
                 <div className="w-10"></div>
             </div>
 
@@ -59,7 +61,7 @@ export function Step4Biometrics({ gender, setGender, age, setAge, onNext, onBack
                 <div className="h-1 flex-1 bg-[#BBF246] rounded-full"></div>
                 <div className="h-1 flex-1 bg-[#BBF246] rounded-full"></div>
                 <div className="h-1 flex-1 bg-[#BBF246] rounded-full"></div>
-                {[...Array(3)].map((_, i) => (
+                {[...Array(6)].map((_, i) => (
                     <div key={i} className="h-1 flex-1 bg-gray-100 rounded-full"></div>
                 ))}
             </div>
@@ -69,8 +71,8 @@ export function Step4Biometrics({ gender, setGender, age, setAge, onNext, onBack
                 animate={{ opacity: 1, y: 0 }}
                 className="flex-1 flex flex-col"
             >
-                <h1 className="text-2xl font-black mb-2 text-center tracking-tight">Let's calibrate your baseline.</h1>
-                <p className="text-[#5E6468] mb-8 text-center font-medium">To check your metabolic rate, we need a few details.</p>
+                <h1 className="text-2xl font-black mb-2 text-center tracking-tight">{t.step4_title}</h1>
+                <p className="text-[#5E6468] mb-8 text-center font-medium">{t.step4_subtitle}</p>
 
                 {/* Gender Selection */}
                 <div className="grid grid-cols-2 gap-4 mb-12">
@@ -88,21 +90,23 @@ export function Step4Biometrics({ gender, setGender, age, setAge, onNext, onBack
                                     <User className={`w-12 h-12 ${gender === g ? 'text-[#BBF246]' : 'text-gray-400'}`} />
                                 )}
                             </div>
-                            <span className={`text-lg font-bold capitalize relative z-10 ${gender === g ? 'text-white' : 'text-gray-400'}`}>{g}</span>
+                            <span className={`text-lg font-bold capitalize relative z-10 ${gender === g ? 'text-white' : 'text-gray-400'}`}>
+                                {g === 'male' ? t.gender_male : t.gender_female}
+                            </span>
                         </button>
                     ))}
                 </div>
 
                 {/* Age Scroller */}
                 <div className="flex flex-col items-center">
-                    <label className="text-gray-400 block mb-4 text-center font-bold uppercase tracking-wider text-xs">Age</label>
+                    <label className="text-gray-400 block mb-4 text-center font-bold uppercase tracking-wider text-xs">{t.age_label}</label>
 
                     {/* Big Number Display */}
                     <div className="text-center mb-6">
                         <span className="text-6xl font-black tracking-tighter text-[#192126] tabular-nums">
                             {age}
                         </span>
-                        <span className="text-xl text-gray-400 font-bold ml-2">years</span>
+                        <span className="text-xl text-gray-400 font-bold ml-2">{t.years_old}</span>
                     </div>
 
                     {/* Tape Measure Container */}
@@ -147,7 +151,7 @@ export function Step4Biometrics({ gender, setGender, age, setAge, onNext, onBack
 
             <div className="mt-auto pt-6 border-t border-gray-100">
                 <Button onClick={onNext} disabled={!gender}>
-                    Next
+                    {t.next}
                 </Button>
             </div>
         </div>

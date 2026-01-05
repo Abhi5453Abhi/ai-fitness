@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from './Button';
 import { ArrowLeft, Check } from 'lucide-react';
+import { useLanguage } from './LanguageContext';
 
 interface StepHabitsProps {
     habits: string[];
@@ -9,21 +10,32 @@ interface StepHabitsProps {
     onBack: () => void;
 }
 
-const RECOMMENDED_HABITS = [
-    "Eat more protein", "Plan more meals",
-    "Meal prep and cook", "Eat more fiber",
-    "Move more", "Workout more"
+const RECOMMENDED_HABITS_MAP = [
+    { id: "Eat more protein", key: "habit_protein" },
+    { id: "Plan more meals", key: "habit_meals" },
+    { id: "Meal prep and cook", key: "habit_prep" },
+    { id: "Eat more fiber", key: "habit_fiber" },
+    { id: "Move more", key: "habit_move" },
+    { id: "Workout more", key: "habit_workout" }
 ];
 
-const MORE_HABITS = [
-    "Track nutrients", "Track calories", "Track macros",
-    "Eat mindfully", "Eat a balanced diet",
-    "Eat whole foods", "Eat more vegetables",
-    "Eat more fruit", "Drink more water",
-    "Prioritize sleep", "Something else", "I'm not sure"
+const MORE_HABITS_MAP = [
+    { id: "Track nutrients", key: "habit_track_nutrients" },
+    { id: "Track calories", key: "habit_track_calories" },
+    { id: "Track macros", key: "habit_track_macros" },
+    { id: "Eat mindfully", key: "habit_mindfully" },
+    { id: "Eat a balanced diet", key: "habit_balanced" },
+    { id: "Eat whole foods", key: "habit_whole" },
+    { id: "Eat more vegetables", key: "habit_veg" },
+    { id: "Eat more fruit", key: "habit_fruit" },
+    { id: "Drink more water", key: "habit_water_more" },
+    { id: "Prioritize sleep", key: "habit_sleep" },
+    { id: "Something else", key: "habit_else" },
+    { id: "I'm not sure", key: "habit_unsure" }
 ];
 
 export function StepHabits({ habits, setHabits, onNext, onBack }: StepHabitsProps) {
+    const { t } = useLanguage();
 
     const toggleHabit = (habit: string) => {
         if (habits.includes(habit)) {
@@ -39,21 +51,18 @@ export function StepHabits({ habits, setHabits, onNext, onBack }: StepHabitsProp
                 <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                     <ArrowLeft className="w-5 h-5 text-[#192126]" />
                 </button>
-                <span className="mx-auto text-lg font-bold">Goals</span>
+                <span className="mx-auto text-lg font-bold">{t.step_habits_header}</span>
                 <div className="w-10"></div>
             </div>
 
             <div className="flex gap-1 mb-8">
-                {/* Progress Bar - Step 8 of 12 (roughly) */}
-                <div className="h-1 flex-1 bg-[#BBF246] rounded-full"></div>
-                <div className="h-1 flex-1 bg-[#BBF246] rounded-full"></div>
-                <div className="h-1 flex-1 bg-[#BBF246] rounded-full"></div>
-                <div className="h-1 flex-1 bg-[#BBF246] rounded-full"></div>
-                <div className="h-1 flex-1 bg-[#BBF246] rounded-full"></div>
-                <div className="h-1 flex-1 bg-[#BBF246] rounded-full"></div>
-                <div className="h-1 flex-1 bg-[#BBF246] rounded-full"></div>
-                <div className="h-1 flex-1 bg-[#BBF246] rounded-full"></div>
-                <div className="h-1 flex-1 bg-gray-100 rounded-full"></div>
+                {/* Progress Bar - Step 12 of ~16 */}
+                {[...Array(12)].map((_, i) => (
+                    <div key={i} className="h-1 flex-1 bg-[#BBF246] rounded-full"></div>
+                ))}
+                {[...Array(4)].map((_, i) => (
+                    <div key={i} className="h-1 flex-1 bg-gray-100 rounded-full"></div>
+                ))}
             </div>
 
             <motion.div
@@ -62,24 +71,24 @@ export function StepHabits({ habits, setHabits, onNext, onBack }: StepHabitsProp
                 className="flex-1 overflow-y-auto pb-4 no-scrollbar"
             >
                 <h1 className="text-2xl font-black mb-6 tracking-tight">
-                    Which healthy habits are most important to you?
+                    {t.step_habits_title}
                 </h1>
 
                 <div className="mb-8">
-                    <h3 className="text-gray-400 font-bold uppercase tracking-wider text-xs mb-4">Recommended for you</h3>
+                    <h3 className="text-gray-400 font-bold uppercase tracking-wider text-xs mb-4">{t.section_recommended}</h3>
                     <div className="flex flex-wrap gap-2">
-                        {RECOMMENDED_HABITS.map(habit => {
-                            const isSelected = habits.includes(habit);
+                        {RECOMMENDED_HABITS_MAP.map(item => {
+                            const isSelected = habits.includes(item.id);
                             return (
                                 <button
-                                    key={habit}
-                                    onClick={() => toggleHabit(habit)}
+                                    key={item.id}
+                                    onClick={() => toggleHabit(item.id)}
                                     className={`px-5 py-3 rounded-full text-sm font-bold transition-all border-2 flex items-center gap-2 ${isSelected
                                         ? 'bg-[#192126] border-[#192126] text-white shadow-lg'
                                         : 'bg-white border-gray-100 text-[#192126] hover:border-gray-300'
                                         }`}
                                 >
-                                    {habit}
+                                    {t[item.key]}
                                     {isSelected && <Check className="w-4 h-4 text-[#BBF246]" />}
                                 </button>
                             );
@@ -88,20 +97,20 @@ export function StepHabits({ habits, setHabits, onNext, onBack }: StepHabitsProp
                 </div>
 
                 <div>
-                    <h3 className="text-gray-400 font-bold uppercase tracking-wider text-xs mb-4">More healthy habits</h3>
+                    <h3 className="text-gray-400 font-bold uppercase tracking-wider text-xs mb-4">{t.section_more}</h3>
                     <div className="flex flex-wrap gap-2">
-                        {MORE_HABITS.map(habit => {
-                            const isSelected = habits.includes(habit);
+                        {MORE_HABITS_MAP.map(item => {
+                            const isSelected = habits.includes(item.id);
                             return (
                                 <button
-                                    key={habit}
-                                    onClick={() => toggleHabit(habit)}
+                                    key={item.id}
+                                    onClick={() => toggleHabit(item.id)}
                                     className={`px-5 py-3 rounded-full text-sm font-bold transition-all border-2 flex items-center gap-2 ${isSelected
                                         ? 'bg-[#192126] border-[#192126] text-white shadow-lg'
                                         : 'bg-white border-gray-100 text-[#192126] hover:border-gray-300'
                                         }`}
                                 >
-                                    {habit}
+                                    {t[item.key]}
                                     {isSelected && <Check className="w-4 h-4 text-[#BBF246]" />}
                                 </button>
                             );
@@ -111,12 +120,12 @@ export function StepHabits({ habits, setHabits, onNext, onBack }: StepHabitsProp
             </motion.div>
 
             <div className="mt-4 pt-6 border-t border-gray-100 text-center text-xs text-gray-400 font-medium mb-4">
-                We use this to personalize your daily plan.
+                {t.personalize_note}
             </div>
 
             <div className="">
                 <Button onClick={onNext}>
-                    Next
+                    {t.next}
                 </Button>
             </div>
         </div>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './Button';
 import { ArrowLeft } from 'lucide-react';
+import { useLanguage } from './LanguageContext';
 
 interface Step8BarriersProps {
     barriers: string[];
@@ -10,20 +11,21 @@ interface Step8BarriersProps {
     onBack: () => void;
 }
 
-const BARRIERS = [
-    "Late Night Snacking", "Sugar Cravings", "Stress Eating",
-    "Limited Time", "Cooking Difficulty", "Social Events",
-    "Slow Metabolism", "Lack of Sleep", "Motivation Drops"
+const BARRIER_KEYS = [
+    "barrier_snacking", "barrier_sugar", "barrier_stress",
+    "barrier_time", "barrier_cooking", "barrier_social",
+    "barrier_metabolism", "barrier_sleep", "barrier_motivation"
 ];
 
 export function Step8Barriers({ barriers, setBarriers, onNext, onBack }: Step8BarriersProps) {
+    const { t } = useLanguage();
     const [showToast, setShowToast] = useState(false);
 
-    const toggleBarrier = (barrier: string) => {
-        if (barriers.includes(barrier)) {
-            setBarriers(s => s.filter(b => b !== barrier));
+    const toggleBarrier = (barrierKey: string) => {
+        if (barriers.includes(barrierKey)) {
+            setBarriers(s => s.filter(b => b !== barrierKey));
         } else {
-            setBarriers(s => [...s, barrier]);
+            setBarriers(s => [...s, barrierKey]);
             setShowToast(true);
             setTimeout(() => setShowToast(false), 2000);
         }
@@ -35,7 +37,7 @@ export function Step8Barriers({ barriers, setBarriers, onNext, onBack }: Step8Ba
                 <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                     <ArrowLeft className="w-5 h-5 text-[#192126]" />
                 </button>
-                <span className="mx-auto text-lg font-bold">Barriers</span>
+                <span className="mx-auto text-lg font-bold">8/10</span>
                 <div className="w-10"></div>
             </div>
 
@@ -51,16 +53,16 @@ export function Step8Barriers({ barriers, setBarriers, onNext, onBack }: Step8Ba
                 animate={{ opacity: 1, y: 0 }}
                 className="flex-1 overflow-y-auto no-scrollbar"
             >
-                <h1 className="text-2xl font-black mb-2 tracking-tight">Any roadblocks?</h1>
-                <p className="text-[#5E6468] font-medium mb-8">Do you follow any specific diet or have habits we should combat?</p>
+                <h1 className="text-2xl font-black mb-2 tracking-tight">{t.step8_title}</h1>
+                <p className="text-[#5E6468] font-medium mb-8">{t.step8_subtitle}</p>
 
                 <div className="flex flex-wrap gap-3">
-                    {BARRIERS.map((barrier) => {
-                        const isSelected = barriers.includes(barrier);
+                    {BARRIER_KEYS.map((barrierKey) => {
+                        const isSelected = barriers.includes(barrierKey);
                         return (
                             <motion.button
-                                key={barrier}
-                                onClick={() => toggleBarrier(barrier)}
+                                key={barrierKey}
+                                onClick={() => toggleBarrier(barrierKey)}
                                 whileTap={{ scale: 0.95 }}
                                 animate={isSelected ? {
                                     backgroundColor: "#192126",
@@ -73,7 +75,7 @@ export function Step8Barriers({ barriers, setBarriers, onNext, onBack }: Step8Ba
                                 }}
                                 className={`px-4 py-3 rounded-full border-2 font-bold text-sm transition-all shadow-sm ${isSelected ? 'shadow-lg' : ''}`}
                             >
-                                {barrier}
+                                {t[barrierKey]}
                             </motion.button>
                         );
                     })}
@@ -94,8 +96,8 @@ export function Step8Barriers({ barriers, setBarriers, onNext, onBack }: Step8Ba
                             <span className="text-xl">🛡️</span>
                         </div>
                         <div>
-                            <p className="text-sm font-bold text-white">Got it.</p>
-                            <p className="text-xs text-gray-400">We'll build a strategy for that.</p>
+                            <p className="text-sm font-bold text-white">{t.toast_got_it}</p>
+                            <p className="text-xs text-gray-400">{t.toast_strategy}</p>
                         </div>
                     </motion.div>
                 )}
@@ -103,7 +105,7 @@ export function Step8Barriers({ barriers, setBarriers, onNext, onBack }: Step8Ba
 
             <div className="mt-4 pt-6 border-t border-gray-100">
                 <Button onClick={onNext}>
-                    Next
+                    {t.next}
                 </Button>
             </div>
         </div>

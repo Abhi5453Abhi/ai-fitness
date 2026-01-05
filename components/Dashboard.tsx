@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Bell, Flame, Footprints, LayoutDashboard, BookOpen, Plus, BarChart3, MoreHorizontal, Flag, Utensils, Zap, Clock, ChevronRight } from 'lucide-react';
 import { ActionMenu } from './ActionMenu';
 import { LogFood } from './LogFood';
+import { StepWaiting } from './StepWaiting';
+import { useLanguage } from './LanguageContext';
 
 interface Meal {
     name: string;
@@ -31,16 +33,27 @@ interface DashboardProps {
         goalSummary: string;
         weeklyPlan: Record<string, DailyPlan>;
     } | null;
+    planReadyTime?: number | null;
 }
 
-export function Dashboard({ planData }: DashboardProps) {
+export function Dashboard({ planData, planReadyTime }: DashboardProps) {
+    const { t } = useLanguage();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isLogFoodOpen, setIsLogFoodOpen] = useState(false);
     const [selectedDay, setSelectedDay] = useState<string>("Day 1");
+    // Ensure we track readiness locally to force re-render on completion
+    const [isReady, setIsReady] = useState(() => !planReadyTime || Date.now() >= planReadyTime);
 
     const currentDayPlan = planData?.weeklyPlan?.[selectedDay];
     const meals = currentDayPlan?.meals;
     const calories = currentDayPlan?.calories || 2000;
+
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return t.greeting_morning;
+        if (hour < 18) return t.greeting_afternoon;
+        return t.greeting_evening;
+    }
 
     return (
         <div className="flex flex-col h-full bg-white text-[#192126] overflow-hidden relative font-sans">
@@ -52,7 +65,7 @@ export function Dashboard({ planData }: DashboardProps) {
                         AH
                     </div>
                     <div>
-                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Good Morning</p>
+                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">{getGreeting()}</p>
                         <h1 className="text-lg font-black leading-none">Abhishek</h1>
                     </div>
                 </div>
@@ -66,35 +79,43 @@ export function Dashboard({ planData }: DashboardProps) {
             <div className="flex-1 overflow-y-auto px-6 pb-28 no-scrollbar">
 
                 {/* Day Selector */}
-                {planData?.weeklyPlan && (
-                    <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar mb-4">
-                        {Object.keys(planData.weeklyPlan).sort().map((day) => (
-                            <button
-                                key={day}
-                                onClick={() => setSelectedDay(day)}
-                                className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all ${selectedDay === day
-                                    ? 'bg-[#BBF246] text-[#192126] shadow-md shadow-[#BBF246]/20'
-                                    : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
-                                    }`}
-                            >
-                                {day}
-                            </button>
-                        ))}
-                    </div>
-                )}
+                <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar mb-4">
+                    {(planData?.weeklyPlan ? Object.keys(planData.weeklyPlan).sort() : ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7"]).map((day) => (
+                        <button
+                            key={day}
+                            onClick={() => setSelectedDay(day)}
+                            className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all ${selectedDay === day
+                                ? 'bg-[#BBF246] text-[#192126] shadow-md shadow-[#BBF246]/20'
+                                : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
+                                }`}
+                        >
+                            {day}
+                        </button>
+                    ))}
+                </div>
 
                 {/* Meal Plan Section */}
-                {meals ? (
+                {!isReady ? (
+                    <div className="mb-6">
+                        {/* Reuse StepWaiting but inside the dashboard layout */}
+                        <div className="rounded-3xl overflow-hidden shadow-sm border border-gray-100 h-[60vh]">
+                            <StepWaiting
+                                targetTime={planReadyTime!}
+                                onComplete={() => setIsReady(true)}
+                            />
+                        </div>
+                    </div>
+                ) : meals ? (
                     <div className="mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500" key={selectedDay}>
                         <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                            {selectedDay} Plan <span className="text-xs font-normal text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Indian Diet</span>
+                            {selectedDay} {t.todays_plan}
                             <span className="ml-auto text-xs font-bold text-[#BBF246] bg-[#192126] px-2 py-1 rounded-md">{calories} kcal</span>
                         </h3>
 
                         <div className="space-y-4">
                             {/* Breakfast */}
                             <MealCard
-                                title="Breakfast"
+                                title={t.meal_breakfast}
                                 time="8:00 AM"
                                 icon={<Utensils className="w-4 h-4" />}
                                 meal={meals.breakfast}
@@ -104,7 +125,7 @@ export function Dashboard({ planData }: DashboardProps) {
 
                             {/* Lunch */}
                             <MealCard
-                                title="Lunch"
+                                title={t.meal_lunch}
                                 time="1:00 PM"
                                 icon={<Utensils className="w-4 h-4" />}
                                 meal={meals.lunch}
@@ -124,7 +145,7 @@ export function Dashboard({ planData }: DashboardProps) {
 
                             {/* Dinner */}
                             <MealCard
-                                title="Dinner"
+                                title={t.meal_dinner}
                                 time="8:00 PM"
                                 icon={<Utensils className="w-4 h-4" />}
                                 meal={meals.dinner}
