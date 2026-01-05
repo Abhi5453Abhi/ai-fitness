@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+    --font-sans: 'Lato', sans-serif;
+}
+
+:root {
+    --color-bg: #FFFFFF;
+    --color-text-main: #192126;
+    --color-text-muted: #5E6468;
+    --color-primary: #BBF246;
+    /* Lime */
+    --color-secondary: #192126;
+    /* Dark Navy */
+
+    /* Accents */
+    --color-accent-purple: #A48AED;
+    --color-accent-red: #ED4747;
+    --color-accent-orange: #FCC46F;
+    --color-accent-blue: #95CCE3;
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-text-main);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+
+    /* Buttons */
+    .btn-primary {
+        @apply bg-[#192126] text-white font-bold rounded-full transition-transform active:scale-95 shadow-lg shadow-gray-200 outline-none;
+    }
+
+    .btn-lime {
+        @apply bg-[#BBF246] text-[#192126] font-bold rounded-full transition-transform active:scale-95 shadow-lg shadow-lime-200 outline-none;
+    }
+
+    /* Cards */
+    .card-clean {
+        @apply bg-white border border-gray-100 rounded-3xl shadow-sm;
+    }
+
+    /* Inputs */
+    .input-clean {
+        @apply w-full bg-gray-50 border border-gray-200 rounded-2xl py-4 px-4 text-[#192126] placeholder-gray-400 focus:outline-none focus:border-[#BBF246] focus:ring-1 focus:ring-[#BBF246] transition-all font-sans;
+    }
+}
