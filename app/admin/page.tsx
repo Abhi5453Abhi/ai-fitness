@@ -41,14 +41,25 @@ export default function AdminPage() {
     };
 
     useEffect(() => {
+        const storedAuth = localStorage.getItem('admin_authenticated');
+        if (storedAuth === 'true') {
+            setIsAuthenticated(true);
+        }
+    }, []);
+
+    useEffect(() => {
         if (isAuthenticated) {
             fetchAttempts();
         }
     }, [isAuthenticated]);
 
     const handleReview = async (id: number, status: 'approved' | 'rejected', reps: number) => {
-        // Optimistic update
-        setAttempts(prev => prev.filter(a => a.id !== id));
+        // Optimistic update: Update the status instead of filtering it out
+        setAttempts(prev => prev.map(a =>
+            a.id === id
+                ? { ...a, status: status, repCount: reps }
+                : a
+        ));
 
         try {
             await fetch('/api/admin/review', {
@@ -67,6 +78,7 @@ export default function AdminPage() {
         e.preventDefault();
         if (pin === '1234') { // Hardcoded for Demo
             setIsAuthenticated(true);
+            localStorage.setItem('admin_authenticated', 'true');
         } else {
             alert('Incorrect PIN');
         }
@@ -106,23 +118,23 @@ export default function AdminPage() {
     const selectedAttempt = attempts.find(a => a.id === selectedAttemptId);
 
     return (
-        <div className="min-h-screen bg-black text-white p-6 md:p-10">
+        <div className="min-h-screen bg-black text-white p-2 md:p-10">
             <div className="max-w-4xl mx-auto">
-                <div className="flex justify-between items-center mb-10">
+                <div className="flex justify-between items-center mb-6 md:mb-10">
                     <div>
-                        <h1 className="text-3xl font-black mb-1">Moderation Queue</h1>
-                        <p className="text-gray-400 text-sm">Review user push-up attempts</p>
+                        <h1 className="text-2xl md:text-3xl font-black mb-1">Moderation Queue</h1>
+                        <p className="text-gray-400 text-xs md:text-sm">Review user push-up attempts</p>
                     </div>
                     <div className="flex gap-2">
                         <button
                             onClick={() => { setActiveTab('pending'); setSelectedAttemptId(null); }}
-                            className={`px-4 py-2 rounded-full text-sm font-bold transition-colors ${activeTab === 'pending' ? 'bg-[#BBF246] text-[#192126]' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
+                            className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-bold transition-colors ${activeTab === 'pending' ? 'bg-[#BBF246] text-[#192126]' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
                         >
                             Pending
                         </button>
                         <button
                             onClick={() => { setActiveTab('processed'); setSelectedAttemptId(null); }}
-                            className={`px-4 py-2 rounded-full text-sm font-bold transition-colors ${activeTab === 'processed' ? 'bg-[#BBF246] text-[#192126]' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
+                            className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-bold transition-colors ${activeTab === 'processed' ? 'bg-[#BBF246] text-[#192126]' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
                         >
                             Processed
                         </button>
@@ -140,47 +152,49 @@ export default function AdminPage() {
                 ) : (
                     <div className="space-y-4">
                         {/* List View */}
-                        <div className="bg-[#192126] rounded-2xl overflow-hidden border border-white/10">
-                            <table className="w-full text-left">
-                                <thead className="bg-white/5 text-gray-400 text-xs uppercase font-bold sticky top-0">
-                                    <tr>
-                                        <th className="px-6 py-4">Status</th>
-                                        <th className="px-6 py-4">User</th>
-                                        <th className="px-6 py-4">Date</th>
-                                        <th className="px-6 py-4">Reps</th>
-                                        <th className="px-6 py-4">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-white/5">
-                                    {filteredAttempts.map(attempt => (
-                                        <tr
-                                            key={attempt.id}
-                                            onClick={() => setSelectedAttemptId(attempt.id)}
-                                            className={`cursor-pointer transition-colors ${selectedAttemptId === attempt.id ? 'bg-[#BBF246]/10' : 'hover:bg-white/5'}`}
-                                        >
-                                            <td className="px-6 py-4">
-                                                <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${attempt.status === 'approved' ? 'bg-[#BBF246]/20 text-[#BBF246]' :
-                                                    attempt.status === 'rejected' ? 'bg-red-500/20 text-red-500' :
-                                                        'bg-yellow-500/20 text-yellow-500'
-                                                    }`}>
-                                                    {attempt.status}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 text-sm font-bold">{attempt.userId}</td>
-                                            {/* @ts-ignore */}
-                                            <td className="px-6 py-4 text-xs text-gray-400 font-mono">{new Date(attempt.createdAt).toLocaleDateString()}</td>
-                                            <td className="px-6 py-4 font-mono font-bold text-[#BBF246]">
-                                                {attempt.status === 'approved' ? attempt.repCount : '-'}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <button className="text-xs font-bold text-[#BBF246] hover:underline">
-                                                    {attempt.status === 'pending' ? 'Review' : 'Edit'}
-                                                </button>
-                                            </td>
+                        <div className="bg-[#192126] rounded-2xl overflow-hidden border border-white/10 flex flex-col">
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left min-w-[600px]">
+                                    <thead className="bg-white/5 text-gray-400 text-xs uppercase font-bold sticky top-0">
+                                        <tr>
+                                            <th className="px-4 md:px-6 py-4">Status</th>
+                                            <th className="px-4 md:px-6 py-4">User</th>
+                                            <th className="px-4 md:px-6 py-4">Date</th>
+                                            <th className="px-4 md:px-6 py-4">Reps</th>
+                                            <th className="px-4 md:px-6 py-4">Action</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody className="divide-y divide-white/5">
+                                        {filteredAttempts.map(attempt => (
+                                            <tr
+                                                key={attempt.id}
+                                                onClick={() => setSelectedAttemptId(attempt.id)}
+                                                className={`cursor-pointer transition-colors ${selectedAttemptId === attempt.id ? 'bg-[#BBF246]/10' : 'hover:bg-white/5'}`}
+                                            >
+                                                <td className="px-4 md:px-6 py-4">
+                                                    <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${attempt.status === 'approved' ? 'bg-[#BBF246]/20 text-[#BBF246]' :
+                                                        attempt.status === 'rejected' ? 'bg-red-500/20 text-red-500' :
+                                                            'bg-yellow-500/20 text-yellow-500'
+                                                        }`}>
+                                                        {attempt.status}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 md:px-6 py-4 text-sm font-bold">{attempt.userId}</td>
+                                                {/* @ts-ignore */}
+                                                <td className="px-4 md:px-6 py-4 text-xs text-gray-400 font-mono">{new Date(attempt.createdAt).toLocaleDateString()}</td>
+                                                <td className="px-4 md:px-6 py-4 font-mono font-bold text-[#BBF246]">
+                                                    {attempt.status === 'approved' ? attempt.repCount : '-'}
+                                                </td>
+                                                <td className="px-4 md:px-6 py-4">
+                                                    <button className="text-xs font-bold text-[#BBF246] hover:underline">
+                                                        {attempt.status === 'pending' ? 'Review' : 'Edit'}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 )}
