@@ -27,3 +27,10 @@ backend/.env
 # local env files
 .env
 .env.local
+
+# Next.js
+.next/
+out/
+
+# TypeScript
+tsconfig.tsbuildinfo

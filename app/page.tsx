@@ -279,7 +279,7 @@ export default function Home() {
                                 }}
                             />
                         )}
-                        {step === 17 && <Dashboard planData={planData} planReadyTime={planReadyTime} />}
+                        {step === 17 && <Dashboard name={name} planData={planData} planReadyTime={planReadyTime} />}
                     </>
                 )}
 

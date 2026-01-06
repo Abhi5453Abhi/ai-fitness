@@ -28,6 +28,7 @@ interface DailyPlan {
 }
 
 interface DashboardProps {
+    name: string;
     planData?: {
         message: string;
         goalSummary: string;
@@ -36,7 +37,7 @@ interface DashboardProps {
     planReadyTime?: number | null;
 }
 
-export function Dashboard({ planData, planReadyTime }: DashboardProps) {
+export function Dashboard({ name, planData, planReadyTime }: DashboardProps) {
     const { t } = useLanguage();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isLogFoodOpen, setIsLogFoodOpen] = useState(false);
@@ -55,6 +56,15 @@ export function Dashboard({ planData, planReadyTime }: DashboardProps) {
         return t.greeting_evening;
     }
 
+    const getInitials = (name: string) => {
+        return name
+            .split(' ')
+            .map(part => part[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2);
+    }
+
     return (
         <div className="flex flex-col h-full bg-white text-[#192126] overflow-hidden relative font-sans">
 
@@ -62,11 +72,11 @@ export function Dashboard({ planData, planReadyTime }: DashboardProps) {
             <div className="p-6 flex items-center justify-between z-10 bg-white/80 backdrop-blur-md sticky top-0">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-[#192126] text-white flex items-center justify-center font-bold text-sm">
-                        AH
+                        {getInitials(name)}
                     </div>
                     <div>
                         <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">{getGreeting()}</p>
-                        <h1 className="text-lg font-black leading-none">Abhishek</h1>
+                        <h1 className="text-lg font-black leading-none">{name}</h1>
                     </div>
                 </div>
                 <button className="relative p-2 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors">
