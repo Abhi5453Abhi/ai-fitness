@@ -31,10 +31,10 @@ export default function Home() {
 
     // Lifted State
     const [gender, setGender] = useState<'male' | 'female' | 'other' | null>(null)
-    const [age, setAge] = useState<number>(25)
-    const [height, setHeight] = useState(170)
-    const [weight, setWeight] = useState(70)
-    const [targetWeight, setTargetWeight] = useState(65)
+    const [age, setAge] = useState<number | null>(null)
+    const [height, setHeight] = useState<number | null>(null)
+    const [weight, setWeight] = useState<number | null>(null)
+    const [targetWeight, setTargetWeight] = useState<number | null>(null)
     const [weeklyRate, setWeeklyRate] = useState<string>('')
 
     // NEW STATES
@@ -216,7 +216,36 @@ export default function Home() {
         }
     }
 
-    const handleSkip = () => {
+    const handleSkip = async () => {
+        // Collect current data
+        // For partial saves on skip, we explicitly prefer NULL over defaults if they aren't set
+        const userData = {
+            name, selectedGoals,
+            gender: gender ?? null, // Do not default to 'other', strictly null if unset
+            age: age ?? null,
+            height: height ?? null,
+            weight: weight ?? null,
+            targetWeight: targetWeight ?? null,
+            weeklyRate: weeklyRate || null, // Convert empty string to null
+            dietType,
+            wakeTime, workTime, sleepTime,
+            currentBreakfast, currentLunch, currentDinner,
+            junkFood, milkIntake, waterIntake,
+            healthIssues, allergies,
+            habits, activityLevel, barriers, pledgeDays, userId: userId || 'anonymous'
+        };
+
+        try {
+            // Save what we have so far
+            await fetch('/api/user/profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userData)
+            });
+        } catch (err) {
+            console.error("Failed to save partial profile on skip", err);
+        }
+
         setStep(17);
         setPlanReadyTime(Date.now());
     }
@@ -333,7 +362,12 @@ export default function Home() {
                         {step === 16 && (
                             <Step10Processing
                                 userData={{
-                                    name, selectedGoals, gender: gender || 'other', age, height, weight, targetWeight, weeklyRate,
+                                    name, selectedGoals, gender: gender || 'other',
+                                    age: age ?? 25, // Fallback for AI Plan Generation (it needs numbers)
+                                    height: height ?? 170,
+                                    weight: weight ?? 70,
+                                    targetWeight: targetWeight ?? 65,
+                                    weeklyRate,
                                     dietType,
                                     wakeTime, workTime, sleepTime,
                                     currentBreakfast, currentLunch, currentDinner,

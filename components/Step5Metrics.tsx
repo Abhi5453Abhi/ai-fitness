@@ -6,10 +6,10 @@ import { useState } from 'react';
 import { useLanguage } from './LanguageContext';
 
 interface Step5MetricsProps {
-    height: number;
-    setHeight: (h: number) => void;
-    weight: number;
-    setWeight: (w: number) => void;
+    height: number | null;
+    setHeight: (h: number | null) => void;
+    weight: number | null;
+    setWeight: (w: number | null) => void;
     onNext: () => void;
     onBack: () => void;
     onSkip: () => void;
@@ -18,6 +18,10 @@ interface Step5MetricsProps {
 export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onBack, onSkip }: Step5MetricsProps) {
     const { t } = useLanguage();
     const [focusedInput, setFocusedInput] = useState<'height' | 'weight' | null>(null);
+
+    // Visual defaults
+    const displayHeight = height ?? 170;
+    const displayWeight = weight ?? 70;
 
     return (
         <div className="flex flex-col h-full p-6 bg-white text-[#192126]">
@@ -48,7 +52,7 @@ export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onB
                     <div className="relative flex items-end justify-center mb-6">
                         <input
                             type="number"
-                            value={height}
+                            value={displayHeight}
                             onChange={(e) => setHeight(Number(e.target.value))}
                             onFocus={() => setFocusedInput('height')}
                             onBlur={() => setFocusedInput(null)}
@@ -59,7 +63,7 @@ export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onB
 
                     <div className="w-full h-24 relative opacity-50 hover:opacity-100 transition-opacity">
                         <TapeMeasure
-                            value={height}
+                            value={displayHeight}
                             onChange={setHeight}
                             min={100}
                             max={250}
@@ -79,7 +83,7 @@ export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onB
                     <div className="relative flex items-end justify-center mb-6">
                         <input
                             type="number"
-                            value={weight}
+                            value={displayWeight}
                             onChange={(e) => setWeight(Number(e.target.value))}
                             onFocus={() => setFocusedInput('weight')}
                             onBlur={() => setFocusedInput(null)}
@@ -90,7 +94,7 @@ export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onB
 
                     <div className="w-full h-24 relative opacity-50 hover:opacity-100 transition-opacity">
                         <TapeMeasure
-                            value={weight}
+                            value={displayWeight}
                             onChange={setWeight}
                             min={30}
                             max={200}

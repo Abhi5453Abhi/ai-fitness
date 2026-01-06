@@ -7,8 +7,8 @@ import { useLanguage } from './LanguageContext';
 interface Step4BiometricsProps {
     gender: 'male' | 'female' | 'other' | null;
     setGender: (g: 'male' | 'female' | 'other' | null) => void;
-    age: number;
-    setAge: (a: number | ((prev: number) => number)) => void;
+    age: number | null;
+    setAge: (a: number | null | ((prev: number | null) => number | null)) => void;
     onNext: () => void;
     onBack: () => void;
     onSkip: () => void;
@@ -25,12 +25,15 @@ export function Step4Biometrics({ gender, setGender, age, setAge, onNext, onBack
     const x = useMotionValue(0);
     const smoothX = useSpring(x, { stiffness: 400, damping: 40 });
 
+    // Visual default: if age is null, show 25
+    const displayAge = age ?? 25;
+
     // Sync visual position to state
     useEffect(() => {
-        const index = age - MIN_AGE;
+        const index = displayAge - MIN_AGE;
         const targetX = -index * PIXELS_PER_YEAR;
         x.set(targetX);
-    }, [age, x]);
+    }, [displayAge, x]);
 
     const handleDrag = (_: any, info: any) => {
         const move = info.delta.x;
@@ -105,7 +108,7 @@ export function Step4Biometrics({ gender, setGender, age, setAge, onNext, onBack
                     {/* Big Number Display */}
                     <div className="text-center mb-6">
                         <span className="text-6xl font-black tracking-tighter text-[#192126] tabular-nums">
-                            {age}
+                            {displayAge}
                         </span>
                         <span className="text-xl text-gray-400 font-bold ml-2">{t.years_old}</span>
                     </div>

@@ -70,21 +70,31 @@ export function Step10Processing({ userData, setPlanData, onNext }: Step10Proces
             hasFetched.current = true;
 
             try {
-                // Using relative path - works both locally and on Vercel
+                // 1. Save User Profile First
+                const userRes = await fetch('/api/user/profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...userData })
+                });
+
+                if (!userRes.ok) {
+                    throw new Error("Failed to save user profile");
+                }
+
+                // 2. Generate Plan
                 const response = await fetch('/api/generate-plan', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ...userData, language })
                 });
 
-                if (!response.ok) throw new Error("Failed to fetch");
+                if (!response.ok) throw new Error("Failed to fetch plan");
 
                 const data = await response.json();
                 setPlanData(data);
-                // Note: We do NOT call onNext here anymore, the timer handles it.
 
             } catch (error) {
-                console.error("Error generating plan:", error);
+                console.error("Error in processing:", error);
             }
         };
 
