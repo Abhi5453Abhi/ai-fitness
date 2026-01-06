@@ -31,21 +31,33 @@ export function ReviewCard({ attempt, onReview }: ReviewCardProps) {
     };
 
     return (
-        <div className="bg-[#192126] rounded-xl overflow-hidden border border-white/10 flex flex-col md:flex-row">
-            {/* ... previous code ... */}
+        <div className="bg-[#192126] rounded-xl overflow-hidden border border-white/10 flex flex-col md:flex-row h-[80vh] md:h-[600px]">
+            {/* Video Section */}
+            <div className="w-full md:w-1/2 bg-black relative flex items-center justify-center bg-zinc-900">
+                {attempt.videoUrl ? (
+                    <video
+                        src={attempt.videoUrl}
+                        controls
+                        className="w-full h-full object-contain"
+                    />
+                ) : (
+                    <div className="flex flex-col items-center justify-center text-gray-500">
+                        <Play className="w-12 h-12 mb-2 opacity-50" />
+                        <p>No Video Available</p>
+                    </div>
+                )}
+            </div>
 
             {/* Controls */}
-            <div className="p-4 flex-1 flex flex-col justify-between">
+            <div className="p-6 flex-1 flex flex-col justify-between">
                 <div>
-                    {/* ... previous code ... */}
-                    <div className="flex justify-between items-start mb-2">
-                        {/* ... previous code ... */}
+                    <div className="flex justify-between items-start mb-6">
                         <div>
-                            <p className="text-xs text-gray-400 font-mono">ID: {attempt.id}</p>
-                            <p className="text-sm font-bold text-white">User: {attempt.userId}</p>
+                            <p className="text-xs text-gray-400 font-mono mb-1">ID: {attempt.id}</p>
+                            <p className="text-lg font-bold text-white mb-1">User: {attempt.userId}</p>
                             <p className="text-xs text-gray-500">{new Date(attempt.createdAt).toLocaleString()}</p>
                         </div>
-                        <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${attempt.status === 'approved' ? 'bg-[#BBF246]/20 text-[#BBF246]' :
+                        <span className={`px-3 py-1 rounded text-xs font-bold uppercase ${attempt.status === 'approved' ? 'bg-[#BBF246]/20 text-[#BBF246]' :
                             attempt.status === 'rejected' ? 'bg-red-500/20 text-red-500' :
                                 'bg-yellow-500/20 text-yellow-500'
                             }`}>
@@ -54,9 +66,9 @@ export function ReviewCard({ attempt, onReview }: ReviewCardProps) {
                     </div>
                 </div>
 
-                <div className="mt-4 flex items-end gap-4">
-                    <div className="flex-1">
-                        <label className="block text-xs text-gray-400 mb-1">Rep Count</label>
+                <div className="mt-auto space-y-4">
+                    <div>
+                        <label className="block text-xs text-gray-400 mb-2 uppercase font-bold tracking-wider">Verified Rep Count</label>
                         <input
                             type="number"
                             min="0"
@@ -64,25 +76,27 @@ export function ReviewCard({ attempt, onReview }: ReviewCardProps) {
                             onChange={(e) => setReps(e.target.value === '' ? 0 : parseInt(e.target.value))}
                             placeholder="0"
                             disabled={isProcessing}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-[#BBF246] placeholder-gray-600 disabled:opacity-50"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-mono text-xl focus:outline-none focus:border-[#BBF246] placeholder-gray-600 disabled:opacity-50 transition-colors"
                         />
                     </div>
 
-                    <button
-                        onClick={() => handleAction('rejected')}
-                        disabled={isProcessing}
-                        className="px-4 py-2 bg-red-500/10 text-red-500 rounded-lg font-bold hover:bg-red-500/20 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <X className="w-4 h-4" /> Reject
-                    </button>
+                    <div className="grid grid-cols-2 gap-3">
+                        <button
+                            onClick={() => handleAction('rejected')}
+                            disabled={isProcessing}
+                            className="px-4 py-3 bg-red-500/10 text-red-500 rounded-xl font-bold hover:bg-red-500/20 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <X className="w-5 h-5" /> Reject
+                        </button>
 
-                    <button
-                        onClick={() => handleAction('approved')}
-                        disabled={isProcessing}
-                        className="px-4 py-2 bg-[#BBF246] text-[#192126] rounded-lg font-bold hover:bg-[#a6d93b] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <Check className="w-4 h-4" /> Approve
-                    </button>
+                        <button
+                            onClick={() => handleAction('approved')}
+                            disabled={isProcessing}
+                            className="px-4 py-3 bg-[#BBF246] text-[#192126] rounded-xl font-bold hover:bg-[#a6d93b] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Check className="w-5 h-5" /> Approve
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

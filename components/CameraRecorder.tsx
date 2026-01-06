@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RotateCcw, StopCircle, X, CheckCircle, Video, User, UploadCloud } from 'lucide-react';
+import { RotateCcw, StopCircle, X, CheckCircle, Video, User, UploadCloud, SwitchCamera } from 'lucide-react';
 import { useUploadThing } from '@/utils/uploadthing';
 
 interface CameraRecorderProps {
@@ -13,6 +13,7 @@ type Mode = 'preview' | 'countdown' | 'recording' | 'review' | 'uploading' | 'su
 export function CameraRecorder({ onClose, onComplete }: CameraRecorderProps) {
     const [mode, setMode] = useState<Mode>('preview');
     const [stream, setStream] = useState<MediaStream | null>(null);
+    const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
     const videoRef = useRef<HTMLVideoElement>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<Blob[]>([]);
@@ -42,7 +43,12 @@ export function CameraRecorder({ onClose, onComplete }: CameraRecorderProps) {
         const startCamera = async () => {
             try {
                 const s = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'user', aspectRatio: 9 / 16 },
+                    video: {
+                        facingMode: facingMode,
+                        // Remove strict aspect ratio to prevent excessive cropping/zooming on mobile
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
                     audio: false // No audio needed for pushups usually
                 });
                 setStream(s);
@@ -82,7 +88,7 @@ export function CameraRecorder({ onClose, onComplete }: CameraRecorderProps) {
                 currentStream.getTracks().forEach(track => track.stop());
             }
         };
-    }, [onClose]);
+    }, [onClose, facingMode]);
 
     // Handle Countdown
     useEffect(() => {
@@ -140,6 +146,10 @@ export function CameraRecorder({ onClose, onComplete }: CameraRecorderProps) {
         await startUpload([file]);
     };
 
+    const toggleCamera = () => {
+        setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
+    };
+
     return (
         <div className="fixed inset-0 bg-black z-[70] flex flex-col">
             {/* Video Feed */}
@@ -149,7 +159,7 @@ export function CameraRecorder({ onClose, onComplete }: CameraRecorderProps) {
                     autoPlay
                     playsInline
                     muted
-                    className="w-full h-full object-cover transform scale-x-[-1]" // Mirror effect
+                    className={`w-full h-full object-cover ${facingMode === 'user' ? 'transform scale-x-[-1]' : ''}`} // Mirror effect only for front camera
                 />
             </div>
 
@@ -168,6 +178,18 @@ export function CameraRecorder({ onClose, onComplete }: CameraRecorderProps) {
                             className="w-10 h-10 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/50"
                         >
                             <X className="w-6 h-6" />
+                        </button>
+                    </div>
+                )}
+
+                {mode === 'preview' && (
+                    <div className="absolute top-6 left-1/2 -translate-x-1/2 z-50">
+                        <button
+                            onClick={toggleCamera}
+                            className="bg-black/30 backdrop-blur-md px-4 py-2 rounded-full text-white flex items-center gap-2 border border-white/10 hover:bg-white/10 transition-colors"
+                        >
+                            <SwitchCamera className="w-4 h-4" />
+                            <span className="text-xs font-bold">{facingMode === 'user' ? 'Front' : 'Back'}</span>
                         </button>
                     </div>
                 )}
@@ -287,3 +309,4 @@ export function CameraRecorder({ onClose, onComplete }: CameraRecorderProps) {
         </div>
     );
 }
+
