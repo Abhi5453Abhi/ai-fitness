@@ -10,6 +10,8 @@ export const metadata: Metadata = {
     description: 'Your AI-powered fitness companion',
 }
 
+import { Analytics } from "@vercel/analytics/react"
+
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -21,6 +23,7 @@ export default function RootLayout({
                 <LanguageProvider>
                     {children}
                 </LanguageProvider>
+                <Analytics />
             </body>
         </html>
     );
