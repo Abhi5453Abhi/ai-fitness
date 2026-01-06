@@ -8,6 +8,7 @@ interface StepHabitsProps {
     setHabits: (habits: string[]) => void;
     onNext: () => void;
     onBack: () => void;
+    onSkip: () => void;
 }
 
 const RECOMMENDED_HABITS_MAP = [
@@ -34,7 +35,7 @@ const MORE_HABITS_MAP = [
     { id: "I'm not sure", key: "habit_unsure" }
 ];
 
-export function StepHabits({ habits, setHabits, onNext, onBack }: StepHabitsProps) {
+export function StepHabits({ habits, setHabits, onNext, onBack, onSkip }: StepHabitsProps) {
     const { t } = useLanguage();
 
     const toggleHabit = (habit: string) => {
@@ -123,10 +124,18 @@ export function StepHabits({ habits, setHabits, onNext, onBack }: StepHabitsProp
                 {t.personalize_note}
             </div>
 
-            <div className="">
-                <Button onClick={onNext}>
-                    {t.next}
-                </Button>
+            <div className="mt-4 pt-6 border-t border-gray-100 flex gap-3">
+                <button
+                    onClick={onSkip}
+                    className="flex-1 py-4 rounded-xl font-bold text-[#192126] bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                    Skip
+                </button>
+                <div className="flex-[2]">
+                    <Button onClick={onNext}>
+                        {t.next}
+                    </Button>
+                </div>
             </div>
         </div>
     );

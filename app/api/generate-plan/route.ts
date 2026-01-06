@@ -196,10 +196,14 @@ export async function POST(request: NextRequest) {
             // 1. Ensure User Exists (Upsert with Name)
             await db.insert(users).values({
                 mobile: req.userId,
-                name: req.name
+                name: req.name,
+                onboardingData: req as any // Save full profile
             }).onConflictDoUpdate({
                 target: users.mobile,
-                set: { name: req.name }
+                set: {
+                    name: req.name,
+                    onboardingData: req as any // Update profile on re-generation
+                }
             });
 
             // 2. Get User ID (integer)

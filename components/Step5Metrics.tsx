@@ -12,9 +12,10 @@ interface Step5MetricsProps {
     setWeight: (w: number) => void;
     onNext: () => void;
     onBack: () => void;
+    onSkip: () => void;
 }
 
-export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onBack }: Step5MetricsProps) {
+export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onBack, onSkip }: Step5MetricsProps) {
     const { t } = useLanguage();
     const [focusedInput, setFocusedInput] = useState<'height' | 'weight' | null>(null);
 
@@ -105,10 +106,18 @@ export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onB
 
             </div>
 
-            <div className="mt-auto z-20 pt-6 border-t border-gray-100">
-                <Button onClick={onNext}>
-                    {t.next}
-                </Button>
+            <div className="mt-auto z-20 pt-6 border-t border-gray-100 flex gap-3">
+                <button
+                    onClick={onSkip}
+                    className="flex-1 py-4 rounded-xl font-bold text-[#192126] bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                    Skip
+                </button>
+                <div className="flex-[2]">
+                    <Button onClick={onNext}>
+                        {t.next}
+                    </Button>
+                </div>
             </div>
         </div>
     );

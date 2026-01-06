@@ -20,6 +20,7 @@ interface StepCurrentFoodProps {
 
     onNext: () => void;
     onBack: () => void;
+    onSkip: () => void;
 }
 
 export function StepCurrentFood({
@@ -29,7 +30,7 @@ export function StepCurrentFood({
     junkFood, setJunkFood,
     milkIntake, setMilkIntake,
     waterIntake, setWaterIntake,
-    onNext, onBack
+    onNext, onBack, onSkip
 }: StepCurrentFoodProps) {
     const { t } = useLanguage();
 
@@ -155,8 +156,16 @@ export function StepCurrentFood({
                 </div>
             </motion.div>
 
-            <div className="mt-4 pt-6 border-t border-gray-100">
-                <Button onClick={onNext}>{t.next}</Button>
+            <div className="mt-4 pt-6 border-t border-gray-100 flex gap-3">
+                <button
+                    onClick={onSkip}
+                    className="flex-1 py-4 rounded-xl font-bold text-[#192126] bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                    Skip
+                </button>
+                <div className="flex-[2]">
+                    <Button onClick={onNext}>{t.next}</Button>
+                </div>
             </div>
         </div>
     );

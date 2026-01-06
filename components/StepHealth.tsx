@@ -10,6 +10,7 @@ interface StepHealthProps {
     setAllergies: (a: string[]) => void;
     onNext: () => void;
     onBack: () => void;
+    onSkip: () => void;
 }
 
 const HEALTH_ISSUES = [
@@ -33,7 +34,7 @@ const ALLERGIES = [
 export function StepHealth({
     healthIssues, setHealthIssues,
     allergies, setAllergies,
-    onNext, onBack
+    onNext, onBack, onSkip
 }: StepHealthProps) {
     const { t } = useLanguage();
 
@@ -143,8 +144,16 @@ export function StepHealth({
 
             </motion.div>
 
-            <div className="mt-4 pt-6 border-t border-gray-100">
-                <Button onClick={onNext}>{t.next}</Button>
+            <div className="mt-4 pt-6 border-t border-gray-100 flex gap-3">
+                <button
+                    onClick={onSkip}
+                    className="flex-1 py-4 rounded-xl font-bold text-[#192126] bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                    Skip
+                </button>
+                <div className="flex-[2]">
+                    <Button onClick={onNext}>{t.next}</Button>
+                </div>
             </div>
         </div>
     );

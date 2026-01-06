@@ -9,6 +9,7 @@ interface Step8BarriersProps {
     setBarriers: (b: string[] | ((prev: string[]) => string[])) => void;
     onNext: () => void;
     onBack: () => void;
+    onSkip: () => void;
 }
 
 const BARRIER_KEYS = [
@@ -17,7 +18,7 @@ const BARRIER_KEYS = [
     "barrier_metabolism", "barrier_sleep", "barrier_motivation"
 ];
 
-export function Step8Barriers({ barriers, setBarriers, onNext, onBack }: Step8BarriersProps) {
+export function Step8Barriers({ barriers, setBarriers, onNext, onBack, onSkip }: Step8BarriersProps) {
     const { t } = useLanguage();
     const [showToast, setShowToast] = useState(false);
 
@@ -103,10 +104,18 @@ export function Step8Barriers({ barriers, setBarriers, onNext, onBack }: Step8Ba
                 )}
             </AnimatePresence>
 
-            <div className="mt-4 pt-6 border-t border-gray-100">
-                <Button onClick={onNext}>
-                    {t.next}
-                </Button>
+            <div className="mt-4 pt-6 border-t border-gray-100 flex gap-3">
+                <button
+                    onClick={onSkip}
+                    className="flex-1 py-4 rounded-xl font-bold text-[#192126] bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                    Skip
+                </button>
+                <div className="flex-[2]">
+                    <Button onClick={onNext}>
+                        {t.next}
+                    </Button>
+                </div>
             </div>
         </div>
     );

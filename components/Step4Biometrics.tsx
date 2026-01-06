@@ -11,6 +11,7 @@ interface Step4BiometricsProps {
     setAge: (a: number | ((prev: number) => number)) => void;
     onNext: () => void;
     onBack: () => void;
+    onSkip: () => void;
 }
 
 const MIN_AGE = 18;
@@ -18,7 +19,7 @@ const MAX_AGE = 100;
 const PIXELS_PER_YEAR = 50;
 const TICKS = Array.from({ length: (MAX_AGE - MIN_AGE) + 1 }, (_, i) => MIN_AGE + i);
 
-export function Step4Biometrics({ gender, setGender, age, setAge, onNext, onBack }: Step4BiometricsProps) {
+export function Step4Biometrics({ gender, setGender, age, setAge, onNext, onBack, onSkip }: Step4BiometricsProps) {
     const { t } = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
     const x = useMotionValue(0);
@@ -149,10 +150,18 @@ export function Step4Biometrics({ gender, setGender, age, setAge, onNext, onBack
 
             </motion.div>
 
-            <div className="mt-auto pt-6 border-t border-gray-100">
-                <Button onClick={onNext} disabled={!gender}>
-                    {t.next}
-                </Button>
+            <div className="mt-auto pt-6 border-t border-gray-100 flex gap-3">
+                <button
+                    onClick={onSkip}
+                    className="flex-1 py-4 rounded-xl font-bold text-[#192126] bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                    Skip
+                </button>
+                <div className="flex-[2]">
+                    <Button onClick={onNext} disabled={!gender}>
+                        {t.next}
+                    </Button>
+                </div>
             </div>
         </div>
     );

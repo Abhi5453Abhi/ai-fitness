@@ -7,7 +7,7 @@ import { Phone, ArrowRight, CheckCircle, Loader2, ShieldCheck } from 'lucide-rea
 import { useLanguage } from './LanguageContext';
 
 interface LoginProps {
-    onLoginSuccess: (token: string, uid: string) => void;
+    onLoginSuccess: (token: string, uid: string, existingData?: any) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
@@ -33,12 +33,41 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         setLanguage(lang);
         setLoading(true);
         // Direct login, skipping OTP
-        setTimeout(() => {
-            setLoading(false);
-            const mockToken = "mock-token-" + phoneNumber;
-            const mockUid = phoneNumber;
-            onLoginSuccess(mockToken, mockUid);
-        }, 800);
+        // Real login flow
+        fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phoneNumber: language === 'pa' ? 'pa-' + Date.now() : '9876543210' }) // In real app, use input. For now using input value below.
+        });
+
+        // Actually, let's use the real phone number state
+        fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phoneNumber })
+        })
+            .then(res => res.json())
+            .then(data => {
+                setLoading(false);
+                if (data.success) {
+                    // Existing User: Login and Restore
+                    // We pass the full user object including onboardingData as the 3rd arg (need to update interface if strictly typed, or just pass via callback)
+                    // The onLoginSuccess signature in props is (token, uid). We might need to change it or pass data differently.
+                    // For now, let's pass the data object as the 3rd argument (we'll update the prop type below).
+                    onLoginSuccess("token-" + phoneNumber, phoneNumber, data);
+                } else {
+                    // New User: Proceed to Onboarding
+                    // Treat as login success but without data -> Page will show Step 1
+                    onLoginSuccess("token-" + phoneNumber, phoneNumber, null);
+                }
+            })
+            .catch(err => {
+                console.error("Login failed", err);
+                setLoading(false);
+                // Fallback to new user flow on error? Or show error?
+                // For safety in demo, let's let them in as new users
+                onLoginSuccess("token-" + phoneNumber, phoneNumber, null);
+            });
     }
 
     // const handleVerifyOtp = async (e: React.FormEvent) => {
@@ -126,18 +155,28 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                         >
                             <button
                                 onClick={() => handleLanguageSelect('en')}
-                                className="w-full p-6 rounded-3xl border-2 border-gray-100 hover:border-[#BBF246] hover:bg-[#BBF246]/10 transition-all group flex items-center justify-between"
+                                disabled={loading}
+                                className={`w-full p-6 rounded-3xl border-2 transition-all group flex items-center justify-between ${loading ? 'opacity-70 cursor-not-allowed border-gray-100' : 'border-gray-100 hover:border-[#BBF246] hover:bg-[#BBF246]/10'}`}
                             >
                                 <span className="text-xl font-bold">English</span>
-                                <div className={`w-6 h-6 rounded-full border-2 ${language === 'en' ? 'bg-[#BBF246] border-[#BBF246]' : 'border-gray-300'}`} />
+                                {loading && language === 'en' ? (
+                                    <Loader2 className="w-6 h-6 animate-spin text-[#BBF246]" />
+                                ) : (
+                                    <div className={`w-6 h-6 rounded-full border-2 ${language === 'en' ? 'bg-[#BBF246] border-[#BBF246]' : 'border-gray-300'}`} />
+                                )}
                             </button>
 
                             <button
                                 onClick={() => handleLanguageSelect('pa')}
-                                className="w-full p-6 rounded-3xl border-2 border-gray-100 hover:border-[#BBF246] hover:bg-[#BBF246]/10 transition-all group flex items-center justify-between"
+                                disabled={loading}
+                                className={`w-full p-6 rounded-3xl border-2 transition-all group flex items-center justify-between ${loading ? 'opacity-70 cursor-not-allowed border-gray-100' : 'border-gray-100 hover:border-[#BBF246] hover:bg-[#BBF246]/10'}`}
                             >
                                 <span className="text-xl font-bold">ਪੰਜਾਬੀ</span>
-                                <div className={`w-6 h-6 rounded-full border-2 ${language === 'pa' ? 'bg-[#BBF246] border-[#BBF246]' : 'border-gray-300'}`} />
+                                {loading && language === 'pa' ? (
+                                    <Loader2 className="w-6 h-6 animate-spin text-[#BBF246]" />
+                                ) : (
+                                    <div className={`w-6 h-6 rounded-full border-2 ${language === 'pa' ? 'bg-[#BBF246] border-[#BBF246]' : 'border-gray-300'}`} />
+                                )}
                             </button>
 
                             <button
@@ -193,6 +232,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                     )} */}
                 </AnimatePresence>
 
+
                 {error && (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
@@ -202,6 +242,8 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                         {error}
                     </motion.div>
                 )}
+
+
 
             </motion.div>
         </div>

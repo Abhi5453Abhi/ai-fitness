@@ -8,6 +8,7 @@ interface StepRateProps {
     setWeeklyRate: (rate: string) => void;
     onNext: () => void;
     onBack: () => void;
+    onSkip: () => void;
 }
 
 const RATES = [
@@ -17,7 +18,7 @@ const RATES = [
     { key: "rate_10", value: "1.0", recommended: false },
 ];
 
-export function StepRate({ weeklyRate, setWeeklyRate, onNext, onBack }: StepRateProps) {
+export function StepRate({ weeklyRate, setWeeklyRate, onNext, onBack, onSkip }: StepRateProps) {
     const { t } = useLanguage();
 
     return (
@@ -74,10 +75,18 @@ export function StepRate({ weeklyRate, setWeeklyRate, onNext, onBack }: StepRate
                 </div>
             </motion.div>
 
-            <div className="mt-auto">
-                <Button onClick={onNext} disabled={!weeklyRate}>
-                    {t.next}
-                </Button>
+            <div className="mt-auto flex gap-3">
+                <button
+                    onClick={onSkip}
+                    className="flex-1 py-4 rounded-xl font-bold text-[#192126] bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                    Skip
+                </button>
+                <div className="flex-[2]">
+                    <Button onClick={onNext} disabled={!weeklyRate}>
+                        {t.next}
+                    </Button>
+                </div>
             </div>
         </div>
     );

@@ -12,13 +12,14 @@ interface StepDailyRoutineProps {
     setSleepTime: (time: string) => void;
     onNext: () => void;
     onBack: () => void;
+    onSkip: () => void;
 }
 
 export function StepDailyRoutine({
     wakeTime, setWakeTime,
     workTime, setWorkTime,
     sleepTime, setSleepTime,
-    onNext, onBack
+    onNext, onBack, onSkip
 }: StepDailyRoutineProps) {
     const { t } = useLanguage();
 
@@ -94,10 +95,18 @@ export function StepDailyRoutine({
 
             </motion.div>
 
-            <div className="mt-4 pt-6 border-t border-gray-100">
-                <Button onClick={onNext} disabled={!wakeTime || !sleepTime}>
-                    {t.next}
-                </Button>
+            <div className="mt-4 pt-6 border-t border-gray-100 flex gap-3">
+                <button
+                    onClick={onSkip}
+                    className="flex-1 py-4 rounded-xl font-bold text-[#192126] bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                    Skip
+                </button>
+                <div className="flex-[2]">
+                    <Button onClick={onNext} disabled={!wakeTime || !sleepTime}>
+                        {t.next}
+                    </Button>
+                </div>
             </div>
         </div>
     );
