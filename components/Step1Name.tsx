@@ -8,9 +8,10 @@ interface Step1NameProps {
     setName: (name: string) => void;
     onNext: () => void;
     onBack: () => void;
+    onSkip: () => void;
 }
 
-export function Step1Name({ name, setName, onNext, onBack }: Step1NameProps) {
+export function Step1Name({ name, setName, onNext, onBack, onSkip }: Step1NameProps) {
     const { t } = useLanguage();
     return (
         <div className="flex flex-col h-full p-6 text-[#192126] bg-white">
@@ -57,10 +58,18 @@ export function Step1Name({ name, setName, onNext, onBack }: Step1NameProps) {
                 </div>
             </motion.div>
 
-            <div className="mt-auto pt-6">
-                <Button onClick={onNext} disabled={!name}>
-                    {t.next}
-                </Button>
+            <div className="mt-auto pt-6 flex gap-3">
+                <button
+                    onClick={onSkip}
+                    className="flex-1 py-4 rounded-xl font-bold text-[#192126] bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                    Skip
+                </button>
+                <div className="flex-[2]">
+                    <Button onClick={onNext} disabled={!name}>
+                        {t.next}
+                    </Button>
+                </div>
             </div>
         </div>
     );

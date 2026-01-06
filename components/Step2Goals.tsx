@@ -9,6 +9,7 @@ interface Step2GoalsProps {
     toggleGoal: (goal: string) => void;
     onNext: () => void;
     onBack: () => void;
+    onSkip: () => void;
 }
 
 const GOAL_KEYS = [
@@ -20,7 +21,7 @@ const GOAL_KEYS = [
     'goal_increase_energy'
 ];
 
-export function Step2Goals({ name, selectedGoals, toggleGoal, onNext, onBack }: Step2GoalsProps) {
+export function Step2Goals({ name, selectedGoals, toggleGoal, onNext, onBack, onSkip }: Step2GoalsProps) {
     const { t } = useLanguage();
     return (
         <div className="flex flex-col h-full p-6 text-[#192126] bg-white">
@@ -76,9 +77,17 @@ export function Step2Goals({ name, selectedGoals, toggleGoal, onNext, onBack }: 
             </motion.div>
 
             <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-4 bg-white">
-                <Button onClick={onNext} disabled={selectedGoals.length === 0}>
-                    {t.next}
-                </Button>
+                <button
+                    onClick={onSkip}
+                    className="flex-1 py-4 rounded-xl font-bold text-[#192126] bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                    Skip
+                </button>
+                <div className="flex-[2]">
+                    <Button onClick={onNext} disabled={selectedGoals.length === 0}>
+                        {t.next}
+                    </Button>
+                </div>
             </div>
         </div>
     );

@@ -9,6 +9,7 @@ interface Step6TargetProps {
     currentWeight: number;
     onNext: () => void;
     onBack: () => void;
+    onSkip: () => void;
 }
 
 const MIN_WEIGHT = 40;
@@ -16,7 +17,7 @@ const MAX_WEIGHT = 150;
 const PIXELS_PER_KG = 50; // Distance between numbers
 const TICKS = Array.from({ length: (MAX_WEIGHT - MIN_WEIGHT) + 1 }, (_, i) => MIN_WEIGHT + i);
 
-export function Step6Target({ targetWeight, setTargetWeight, currentWeight, onNext, onBack }: Step6TargetProps) {
+export function Step6Target({ targetWeight, setTargetWeight, currentWeight, onNext, onBack, onSkip }: Step6TargetProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const x = useMotionValue(0);
     const smoothX = useSpring(x, { stiffness: 400, damping: 40 });
@@ -153,10 +154,18 @@ export function Step6Target({ targetWeight, setTargetWeight, currentWeight, onNe
 
             </motion.div>
 
-            <div className="mt-auto pt-6 border-t border-gray-100">
-                <Button onClick={onNext}>
-                    Next
-                </Button>
+            <div className="mt-auto pt-6 border-t border-gray-100 flex gap-3">
+                <button
+                    onClick={onSkip}
+                    className="flex-1 py-4 rounded-xl font-bold text-[#192126] bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                    Skip
+                </button>
+                <div className="flex-[2]">
+                    <Button onClick={onNext}>
+                        Next
+                    </Button>
+                </div>
             </div>
         </div>
     );

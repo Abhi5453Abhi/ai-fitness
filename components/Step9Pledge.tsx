@@ -9,9 +9,10 @@ interface Step9PledgeProps {
     setPledgeDays: (d: number) => void;
     onNext: () => void;
     onBack: () => void;
+    onSkip: () => void;
 }
 
-export function Step9Pledge({ pledgeDays, setPledgeDays, onNext, onBack }: Step9PledgeProps) {
+export function Step9Pledge({ pledgeDays, setPledgeDays, onNext, onBack, onSkip }: Step9PledgeProps) {
     const { t } = useLanguage();
     // Default indices if needed, or derived from pledgeDays? 
     // The previous code had local state default to [0,2,4]. 
@@ -119,10 +120,18 @@ export function Step9Pledge({ pledgeDays, setPledgeDays, onNext, onBack }: Step9
 
             </motion.div>
 
-            <div className="mt-auto pt-6 border-t border-gray-100">
-                <Button onClick={onNext} disabled={selectedIndices.length === 0}>
-                    {t.pledge_button}
-                </Button>
+            <div className="mt-auto pt-6 border-t border-gray-100 flex gap-3">
+                <button
+                    onClick={onSkip}
+                    className="flex-1 py-4 rounded-xl font-bold text-[#192126] bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                    Skip
+                </button>
+                <div className="flex-[2]">
+                    <Button onClick={onNext} disabled={selectedIndices.length === 0}>
+                        {t.pledge_button}
+                    </Button>
+                </div>
             </div>
         </div>
     );

@@ -8,6 +8,7 @@ interface StepDietTypeProps {
     setDietType: (type: string) => void;
     onNext: () => void;
     onBack: () => void;
+    onSkip: () => void;
 }
 
 const DIET_TYPES = [
@@ -15,7 +16,7 @@ const DIET_TYPES = [
     { id: 'vegan', key: 'diet_vegan', descKey: 'diet_vegan_desc', icon: <CandyOff className="w-5 h-5" /> }
 ];
 
-export function StepDietType({ dietType, setDietType, onNext, onBack }: StepDietTypeProps) {
+export function StepDietType({ dietType, setDietType, onNext, onBack, onSkip }: StepDietTypeProps) {
     const { t } = useLanguage();
 
     return (
@@ -77,10 +78,18 @@ export function StepDietType({ dietType, setDietType, onNext, onBack }: StepDiet
                 </div>
             </motion.div>
 
-            <div className="mt-4 pt-6 border-t border-gray-100">
-                <Button onClick={onNext} disabled={!dietType}>
-                    {t.next}
-                </Button>
+            <div className="mt-4 pt-6 border-t border-gray-100 flex gap-3">
+                <button
+                    onClick={onSkip}
+                    className="flex-1 py-4 rounded-xl font-bold text-[#192126] bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                    Skip
+                </button>
+                <div className="flex-[2]">
+                    <Button onClick={onNext} disabled={!dietType}>
+                        {t.next}
+                    </Button>
+                </div>
             </div>
         </div>
     );

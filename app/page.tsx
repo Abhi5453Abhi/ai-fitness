@@ -59,6 +59,7 @@ export default function Home() {
     const [pledgeDays, setPledgeDays] = useState(3)
     const [planData, setPlanData] = useState<any>(null)
     const [planReadyTime, setPlanReadyTime] = useState<number | null>(null)
+    const [points, setPoints] = useState(0)
 
     // Persistence Logic
     const STORAGE_KEY = 'ai-fitness-pal-state'
@@ -102,12 +103,27 @@ export default function Home() {
                 setPledgeDays(parsed.pledgeDays ?? 3)
                 setPlanData(parsed.planData ?? null)
                 setPlanReadyTime(parsed.planReadyTime ?? null)
+                setPoints(parsed.points ?? 0)
             } catch (e) {
                 console.error("Failed to load state", e)
             }
         }
         setIsLoaded(true)
     }, [])
+
+    // Sync Points on Dashboard Load
+    useEffect(() => {
+        if (step === 17 && userId) {
+            fetch(`/api/user/sync?userId=${userId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        setPoints(data.points);
+                    }
+                })
+                .catch(err => console.error("Failed to sync points", err));
+        }
+    }, [step, userId])
 
     // Save state on change
     useEffect(() => {
@@ -144,7 +160,8 @@ export default function Home() {
             barriers,
             pledgeDays,
             planData,
-            planReadyTime
+            planReadyTime,
+            points
         }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave))
     }, [
@@ -177,7 +194,8 @@ export default function Home() {
         barriers,
         pledgeDays,
         planData,
-        planReadyTime
+        planReadyTime,
+        points
     ])
 
     const handleNext = () => {
@@ -198,25 +216,74 @@ export default function Home() {
         }
     }
 
+    const handleSkip = () => {
+        setStep(17);
+        setPlanReadyTime(Date.now());
+    }
+
     return (
         <div className="w-full min-h-screen bg-gray-50 text-[#192126] flex justify-center overflow-hidden font-sans relative">
             {step === 16 && <BackgroundAnimation />}
             <div className="w-full max-w-md h-screen relative bg-transparent sm:border-x sm:border-gray-200 shadow-2xl shadow-gray-200/50 z-10">
                 {!isAuthenticated ? (
-                    <Login onLoginSuccess={(token: string, uid: string) => {
-                        console.log("Logged in with token:", token, "UID:", uid)
+                    <Login onLoginSuccess={(token: string, uid: string, existingData?: any) => {
+                        console.log("Logged in with token:", token, "UID:", uid, "Data:", existingData)
                         setIsAuthenticated(true)
                         setUserId(uid)
+                        // Sync for components reading directly from localStorage (like Challenge)
+                        localStorage.setItem('userId', uid)
+
+                        if (existingData && existingData.success) {
+                            const { user, plan } = existingData;
+                            const profile = user.onboardingData;
+
+                            if (profile) {
+                                setName(profile.name || '');
+                                setSelectedGoals(profile.selectedGoals || []);
+                                setGender(profile.gender || 'other');
+                                setAge(profile.age || 25);
+                                setHeight(profile.height || 170);
+                                setWeight(profile.weight || 70);
+                                setTargetWeight(profile.targetWeight || 65);
+                                setWeeklyRate(profile.weeklyRate || '');
+                                setDietType(profile.dietType || '');
+                                setCurrentBreakfast(profile.currentBreakfast || '');
+                                setCurrentLunch(profile.currentLunch || '');
+                                setCurrentDinner(profile.currentDinner || '');
+                                setJunkFood(profile.junkFood || false);
+                                setMilkIntake(profile.milkIntake || false);
+                                setWaterIntake(profile.waterIntake || false);
+                                setWakeTime(profile.wakeTime || '');
+                                setWorkTime(profile.workTime || '');
+                                setSleepTime(profile.sleepTime || '');
+                                setHealthIssues(profile.healthIssues || []);
+                                setAllergies(profile.allergies || []);
+                                setHabits(profile.habits || []);
+                                setActivityLevel(profile.activityLevel || '');
+                                setBarriers(profile.barriers || []);
+                                setPledgeDays(profile.pledgeDays || 3);
+                            }
+
+                            if (user.points) {
+                                setPoints(user.points);
+                            }
+
+                            if (plan) {
+                                setPlanData(plan);
+                                setPlanReadyTime(Date.now()); // Already ready
+                                setStep(17); // Jump to Dashboard
+                            }
+                        }
                     }} />
                 ) : (
                     <>
-                        {step === 1 && <Step1Name name={name} setName={setName} onNext={handleNext} onBack={handleBack} />}
-                        {step === 2 && <Step2Goals name={name} selectedGoals={selectedGoals} toggleGoal={toggleGoal} onNext={handleNext} onBack={handleBack} />}
-                        {step === 3 && <Step3Motivation selectedGoals={selectedGoals} onNext={handleNext} onBack={handleBack} />}
-                        {step === 4 && <Step4Biometrics gender={gender} setGender={setGender} age={age} setAge={setAge} onNext={handleNext} onBack={handleBack} />}
-                        {step === 5 && <Step5Metrics height={height} setHeight={setHeight} weight={weight} setWeight={setWeight} onNext={handleNext} onBack={handleBack} />}
-                        {step === 6 && <Step6Target targetWeight={targetWeight} setTargetWeight={setTargetWeight} currentWeight={weight} onNext={handleNext} onBack={handleBack} />}
-                        {step === 7 && <StepRate weeklyRate={weeklyRate} setWeeklyRate={setWeeklyRate} onNext={handleNext} onBack={handleBack} />}
+                        {step === 1 && <Step1Name name={name} setName={setName} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
+                        {step === 2 && <Step2Goals name={name} selectedGoals={selectedGoals} toggleGoal={toggleGoal} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
+                        {step === 3 && <Step3Motivation selectedGoals={selectedGoals} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
+                        {step === 4 && <Step4Biometrics gender={gender} setGender={setGender} age={age} setAge={setAge} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
+                        {step === 5 && <Step5Metrics height={height} setHeight={setHeight} weight={weight} setWeight={setWeight} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
+                        {step === 6 && <Step6Target targetWeight={targetWeight} setTargetWeight={setTargetWeight} currentWeight={weight} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
+                        {step === 7 && <StepRate weeklyRate={weeklyRate} setWeeklyRate={setWeeklyRate} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
 
                         {/* NEW STEPS */}
                         {step === 8 && (
@@ -225,6 +292,7 @@ export default function Home() {
                                 setDietType={setDietType}
                                 onNext={handleNext}
                                 onBack={handleBack}
+                                onSkip={handleSkip}
                             />
                         )}
                         {step === 9 && (
@@ -236,6 +304,7 @@ export default function Home() {
                                 milkIntake={milkIntake} setMilkIntake={setMilkIntake}
                                 waterIntake={waterIntake} setWaterIntake={setWaterIntake}
                                 onNext={handleNext} onBack={handleBack}
+                                onSkip={handleSkip}
                             />
                         )}
                         {step === 10 && (
@@ -244,6 +313,7 @@ export default function Home() {
                                 workTime={workTime} setWorkTime={setWorkTime}
                                 sleepTime={sleepTime} setSleepTime={setSleepTime}
                                 onNext={handleNext} onBack={handleBack}
+                                onSkip={handleSkip}
                             />
                         )}
                         {step === 11 && (
@@ -251,13 +321,14 @@ export default function Home() {
                                 healthIssues={healthIssues} setHealthIssues={setHealthIssues}
                                 allergies={allergies} setAllergies={setAllergies}
                                 onNext={handleNext} onBack={handleBack}
+                                onSkip={handleSkip}
                             />
                         )}
 
-                        {step === 12 && <StepHabits habits={habits} setHabits={setHabits} onNext={handleNext} onBack={handleBack} />}
-                        {step === 13 && <Step7Activity activityLevel={activityLevel} setActivityLevel={setActivityLevel} onNext={handleNext} onBack={handleBack} />}
-                        {step === 14 && <Step8Barriers barriers={barriers} setBarriers={setBarriers} onNext={handleNext} onBack={handleBack} />}
-                        {step === 15 && <Step9Pledge pledgeDays={pledgeDays} setPledgeDays={setPledgeDays} onNext={handleNext} onBack={handleBack} />}
+                        {step === 12 && <StepHabits habits={habits} setHabits={setHabits} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
+                        {step === 13 && <Step7Activity activityLevel={activityLevel} setActivityLevel={setActivityLevel} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
+                        {step === 14 && <Step8Barriers barriers={barriers} setBarriers={setBarriers} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
+                        {step === 15 && <Step9Pledge pledgeDays={pledgeDays} setPledgeDays={setPledgeDays} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
 
                         {step === 16 && (
                             <Step10Processing
@@ -279,9 +350,10 @@ export default function Home() {
                                 }}
                             />
                         )}
-                        {step === 17 && <Dashboard name={name} planData={planData} planReadyTime={planReadyTime} />}
+                        {step === 17 && <Dashboard name={name} points={points} planData={planData} planReadyTime={planReadyTime} onCompleteProfile={() => setStep(1)} />}
                     </>
                 )}
+
 
 
                 {/* Reset Debug Button */}
@@ -297,6 +369,6 @@ export default function Home() {
                     Reset Progress
                 </button>
             </div>
-        </div>
+        </div >
     )
 }

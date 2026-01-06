@@ -7,9 +7,10 @@ interface Step3MotivationProps {
     selectedGoals: string[];
     onNext: () => void;
     onBack: () => void;
+    onSkip: () => void;
 }
 
-export function Step3Motivation({ selectedGoals = [], onNext, onBack }: Step3MotivationProps) {
+export function Step3Motivation({ selectedGoals = [], onNext, onBack, onSkip }: Step3MotivationProps) {
     const { t } = useLanguage();
     const isSynergy = selectedGoals.length > 1;
     const primaryGoal = selectedGoals[0] || "Lose Weight";
@@ -288,9 +289,17 @@ export function Step3Motivation({ selectedGoals = [], onNext, onBack }: Step3Mot
                 <button onClick={onBack} className="p-4 rounded-full hover:bg-gray-100 transition-colors shrink-0">
                     <ArrowLeft className="w-6 h-6 text-[#192126]" />
                 </button>
-                <Button onClick={onNext} className="">
-                    {t.next}
-                </Button>
+                <button
+                    onClick={onSkip}
+                    className="flex-1 py-4 rounded-xl font-bold text-[#192126] bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                    Skip
+                </button>
+                <div className="flex-[2]">
+                    <Button onClick={onNext} className="">
+                        {t.next}
+                    </Button>
+                </div>
             </div>
         </div>
     );
