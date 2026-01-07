@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RotateCcw, StopCircle, X, CheckCircle, Video, User, UploadCloud, SwitchCamera } from 'lucide-react';
-import { useUploadThing } from '@/utils/uploadthing';
+import { useUploadContext } from './UploadContext';
 
 interface CameraRecorderProps {
     onClose: () => void;
@@ -19,23 +19,7 @@ export function CameraRecorder({ onClose, onComplete }: CameraRecorderProps) {
     const chunksRef = useRef<Blob[]>([]);
     const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
 
-    const { startUpload, isUploading } = useUploadThing("videoUploader", {
-        onClientUploadComplete: (res) => {
-            console.log("Upload Completed:", res);
-            setMode('success');
-            if (res && res[0]) {
-                onComplete(res[0].url); // Pass back the URL
-            }
-        },
-        onUploadError: (error: Error) => {
-            console.error("Upload Error:", error);
-            alert(`Upload Failed: ${error.message}`);
-            setMode('review'); // Go back to review on error
-        },
-        onUploadProgress: (p: number) => {
-            console.log(`Upload Progress: ${p}%`);
-        }
-    });
+    const { startBackgroundUpload } = useUploadContext();
 
     const [count, setCount] = useState(5); // 5s countdown
     const [timeLeft, setTimeLeft] = useState(60); // 1m recording
@@ -157,7 +141,14 @@ export function CameraRecorder({ onClose, onComplete }: CameraRecorderProps) {
         // Convert Blob to File
         const file = new File([recordedBlob], "pushup-attempt.webm", { type: "video/webm" });
 
-        await startUpload([file]);
+        // Start background upload via global context
+        startBackgroundUpload(file, (url) => {
+            console.log("Background upload finished:", url);
+            onComplete(url);
+        });
+
+        // Close immediately
+        onClose();
     };
 
     const toggleCamera = () => {
@@ -323,4 +314,3 @@ export function CameraRecorder({ onClose, onComplete }: CameraRecorderProps) {
         </div>
     );
 }
-
