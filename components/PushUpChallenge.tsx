@@ -18,9 +18,10 @@ interface Attempt {
 export function PushUpChallenge({ onBack, onRefreshPoints }: PushUpChallengeProps) {
     const { participantCount, joinChallenge } = useChallengeStats();
     const [isRecording, setIsRecording] = useState(false);
-    const [view, setView] = useState<'instructions' | 'history'>('instructions');
+    const [view, setView] = useState<'instructions' | 'history' | 'report'>('instructions');
     const [history, setHistory] = useState<Attempt[]>([]);
     const [loading, setLoading] = useState(true);
+    const [lastResult, setLastResult] = useState<{ count: number; points: number } | null>(null);
 
     const fetchHistory = (isManual = false) => {
         if (isManual) setLoading(true);
@@ -58,11 +59,17 @@ export function PushUpChallenge({ onBack, onRefreshPoints }: PushUpChallengeProp
         return (
             <PushUpCounter
                 onClose={() => setIsRecording(false)}
-                onComplete={async (count, mode) => {
-                    // Close immediately for better UX
+                onComplete={async (count) => {
+                    // 1. Close Camera Immediately
                     setIsRecording(false);
-                    console.log("Pushups completed:", count, "Mode:", mode);
+                    console.log("Pushups completed:", count);
 
+                    // 2. Prepare Report Data
+                    const points = count * 2.5;
+                    setLastResult({ count, points });
+                    setView('report'); // Show report screen
+
+                    // 3. Save to Backend in Background
                     let userId = localStorage.getItem('userId');
                     if (!userId) {
                         userId = 'guest-' + Date.now();
@@ -83,6 +90,42 @@ export function PushUpChallenge({ onBack, onRefreshPoints }: PushUpChallengeProp
                     }
                 }}
             />
+        );
+    }
+
+    // New Report View
+    if (view === 'report' && lastResult) {
+        return (
+            <div className="fixed inset-0 bg-[#192126] z-[60] text-white flex flex-col animate-in fade-in duration-300 items-center justify-center p-6">
+                <div className="w-full max-w-md bg-white/5 border border-white/10 rounded-3xl p-8 text-center relative overflow-hidden">
+                    {/* Background Glow */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-[#BBF246]/20 blur-3xl rounded-full pointer-events-none"></div>
+
+                    <h2 className="text-3xl font-black mb-1 relative z-10">Good Job!</h2>
+                    <p className="text-gray-400 mb-8 relative z-10">Challenge Completed</p>
+
+                    <div className="grid grid-cols-2 gap-4 mb-8 relative z-10">
+                        <div className="bg-[#192126] p-4 rounded-2xl border border-white/5">
+                            <p className="text-sm text-gray-500 font-bold uppercase tracking-wider mb-1">Push-Ups</p>
+                            <p className="text-4xl font-black text-white">{lastResult.count}</p>
+                        </div>
+                        <div className="bg-[#192126] p-4 rounded-2xl border border-white/5">
+                            <p className="text-sm text-gray-500 font-bold uppercase tracking-wider mb-1">FitCoins</p>
+                            <p className="text-4xl font-black text-[#BBF246]">{lastResult.points}</p>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={() => {
+                            setView('instructions');
+                            setLastResult(null);
+                        }}
+                        className="w-full py-4 rounded-xl bg-[#BBF246] text-[#192126] font-black text-lg hover:bg-[#a6d93b] active:scale-[0.98] transition-all relative z-10"
+                    >
+                        CONTINUE
+                    </button>
+                </div>
+            </div>
         );
     }
 
