@@ -21,16 +21,20 @@ export function CameraRecorder({ onClose, onComplete }: CameraRecorderProps) {
 
     const { startUpload, isUploading } = useUploadThing("videoUploader", {
         onClientUploadComplete: (res) => {
-            console.log("Files: ", res);
+            console.log("Upload Completed:", res);
             setMode('success');
             if (res && res[0]) {
                 onComplete(res[0].url); // Pass back the URL
             }
         },
         onUploadError: (error: Error) => {
-            alert(`ERROR! ${error.message}`);
+            console.error("Upload Error:", error);
+            alert(`Upload Failed: ${error.message}`);
             setMode('review'); // Go back to review on error
         },
+        onUploadProgress: (p: number) => {
+            console.log(`Upload Progress: ${p}%`);
+        }
     });
 
     const [count, setCount] = useState(5); // 5s countdown
