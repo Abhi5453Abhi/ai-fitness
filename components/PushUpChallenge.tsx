@@ -1,10 +1,11 @@
 import { ArrowLeft, Play, Info, Users, Clock, History, CheckCircle, XCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { useChallengeStats } from '@/hooks/useChallengeStats';
-import { CameraRecorder } from './CameraRecorder';
+import { PushUpCounter } from './PushUpCounter';
 import { useState, useEffect } from 'react';
 
 interface PushUpChallengeProps {
     onBack: () => void;
+    onRefreshPoints?: () => void;
 }
 
 interface Attempt {
@@ -14,7 +15,7 @@ interface Attempt {
     createdAt: string;
 }
 
-export function PushUpChallenge({ onBack }: PushUpChallengeProps) {
+export function PushUpChallenge({ onBack, onRefreshPoints }: PushUpChallengeProps) {
     const { participantCount, joinChallenge } = useChallengeStats();
     const [isRecording, setIsRecording] = useState(false);
     const [view, setView] = useState<'instructions' | 'history'>('instructions');
@@ -55,10 +56,12 @@ export function PushUpChallenge({ onBack }: PushUpChallengeProps) {
 
     if (isRecording) {
         return (
-            <CameraRecorder
+            <PushUpCounter
                 onClose={() => setIsRecording(false)}
-                onComplete={async (url) => {
-                    console.log("Video uploaded:", url);
+                onComplete={async (count, mode) => {
+                    // Close immediately for better UX
+                    setIsRecording(false);
+                    console.log("Pushups completed:", count, "Mode:", mode);
 
                     let userId = localStorage.getItem('userId');
                     if (!userId) {
@@ -66,20 +69,18 @@ export function PushUpChallenge({ onBack }: PushUpChallengeProps) {
                         localStorage.setItem('userId', userId);
                     }
 
-                    if (url) {
-                        try {
-                            await fetch('/api/challenge/attempt', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ userId, videoUrl: url })
-                            });
-                            // Refresh history to update attempts left immediately
-                            fetchHistory(true);
-                        } catch (e) {
-                            console.error("Failed to save attempt", e);
-                        }
+                    try {
+                        await fetch('/api/challenge/attempt', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId, repCount: count })
+                        });
+                        fetchHistory(true);
+                        // Refresh global points
+                        if (onRefreshPoints) onRefreshPoints();
+                    } catch (e) {
+                        console.error("Failed to save attempt", e);
                     }
-                    setIsRecording(false);
                 }}
             />
         );
