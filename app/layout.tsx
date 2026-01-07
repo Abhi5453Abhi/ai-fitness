@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import { Outfit } from 'next/font/google'
 import './globals.css'
 import { LanguageProvider } from "@/components/LanguageContext";
+import { UploadProvider } from "@/components/UploadContext";
+import { UploadProgressToast } from "@/components/UploadProgressToast";
+import { Analytics } from "@vercel/analytics/react"
 
 const outfit = Outfit({ subsets: ['latin'] })
 
@@ -9,8 +12,6 @@ export const metadata: Metadata = {
     title: 'AI Fitness Pal',
     description: 'Your AI-powered fitness companion',
 }
-
-import { Analytics } from "@vercel/analytics/react"
 
 export default function RootLayout({
     children,
@@ -21,7 +22,9 @@ export default function RootLayout({
         <html lang="en">
             <body className={`${outfit.className} antialiased`} suppressHydrationWarning>
                 <LanguageProvider>
-                    {children}
+                    <UploadProvider>
+                        {children}
+                    </UploadProvider>
                 </LanguageProvider>
                 <Analytics />
             </body>

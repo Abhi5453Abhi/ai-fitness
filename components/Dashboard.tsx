@@ -8,6 +8,7 @@ import { BottomNav } from './BottomNav';
 import { ChallengeSection } from './ChallengeSection';
 import { PushUpChallenge } from './PushUpChallenge';
 import { Store } from './Store';
+import { UploadProgressToast } from './UploadProgressToast';
 
 interface Meal {
     name: string;
@@ -108,6 +109,9 @@ export function Dashboard({ name, points, planData, planReadyTime, onCompletePro
             {showPushUpChallenge && (
                 <PushUpChallenge onBack={() => setShowPushUpChallenge(false)} />
             )}
+
+            {/* Upload Progress Toast - Only visible in Challenge Tab */}
+            {activeTab === 'challenge' && <UploadProgressToast />}
 
             <ActionMenu
                 isOpen={isMenuOpen}
