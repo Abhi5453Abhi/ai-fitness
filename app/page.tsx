@@ -384,7 +384,25 @@ export default function Home() {
                                 }}
                             />
                         )}
-                        {step === 17 && <Dashboard name={name} points={points} planData={planData} planReadyTime={planReadyTime} onCompleteProfile={() => setStep(1)} />}
+                        {step === 17 && <Dashboard
+                            name={name}
+                            points={points}
+                            planData={planData}
+                            planReadyTime={planReadyTime}
+                            onCompleteProfile={() => setStep(1)}
+                            onRefreshPoints={() => {
+                                if (userId) {
+                                    fetch(`/api/user/sync?userId=${userId}`)
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            if (data.success) {
+                                                setPoints(data.points);
+                                            }
+                                        })
+                                        .catch(err => console.error("Failed to sync points", err));
+                                }
+                            }}
+                        />}
                     </>
                 )}
 
