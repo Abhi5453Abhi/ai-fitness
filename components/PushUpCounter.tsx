@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Webcam from 'react-webcam';
+import { SwitchCamera, X } from 'lucide-react';
 import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 import * as poseDetection from '@tensorflow-models/pose-detection';
@@ -201,7 +202,7 @@ export function PushUpCounter({ onComplete, onClose }: PushUpCounterProps) {
                         onClick={() => setFacingMode(prev => prev === 'user' ? 'environment' : 'user')}
                         className="bg-[#BBF246] text-[#192126] w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shadow-[#BBF246]/20 active:scale-95 transition-transform"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0-6-8-12-8-12s-8 6-8 12c0 2 2 3 4 3h8c2 0 4-1 4-3z" /><path d="M4 10c0-2-1.5-3.5-3-3.5" /><path d="M20 10c0-2 1.5-3.5 3-3.5" /><circle cx="12" cy="10" r="3" /></svg>
+                        <SwitchCamera className="w-6 h-6" strokeWidth={2.5} />
                     </button>
 
                     {/* Timer */}
@@ -214,7 +215,7 @@ export function PushUpCounter({ onComplete, onClose }: PushUpCounterProps) {
                         onClick={onClose}
                         className="bg-white/10 text-white w-14 h-14 rounded-2xl flex items-center justify-center hover:bg-white/20 backdrop-blur-md active:scale-95 transition-all"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <X className="w-6 h-6" strokeWidth={2.5} />
                     </button>
                 </div>
             </div>
