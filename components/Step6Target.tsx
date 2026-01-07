@@ -4,9 +4,9 @@ import { Button } from './Button';
 import { ArrowLeft, Calendar } from 'lucide-react';
 
 interface Step6TargetProps {
-    targetWeight: number;
-    setTargetWeight: (w: number | ((prev: number) => number)) => void;
-    currentWeight: number;
+    targetWeight: number | null;
+    setTargetWeight: (w: number | null | ((prev: number | null) => number | null)) => void;
+    currentWeight: number | null;
     onNext: () => void;
     onBack: () => void;
     onSkip: () => void;
@@ -23,11 +23,15 @@ export function Step6Target({ targetWeight, setTargetWeight, currentWeight, onNe
     const smoothX = useSpring(x, { stiffness: 400, damping: 40 });
     const [isFocused, setIsFocused] = useState(false);
 
+    // Visual default
+    const displayTargetWeight = targetWeight ?? 65;
+    const safeCurrentWeight = currentWeight ?? 70; // fallback for calculation
+
     useEffect(() => {
-        const index = targetWeight - MIN_WEIGHT;
+        const index = displayTargetWeight - MIN_WEIGHT;
         const targetX = -index * PIXELS_PER_KG;
         x.set(targetX);
-    }, [targetWeight, x]);
+    }, [displayTargetWeight, x]);
 
     const handleDrag = (_: any, info: any) => {
         const move = info.delta.x;
@@ -45,8 +49,8 @@ export function Step6Target({ targetWeight, setTargetWeight, currentWeight, onNe
     };
 
     const calculateDate = () => {
-        if (!currentWeight) return new Date();
-        const diff = Math.abs(currentWeight - targetWeight);
+        if (!safeCurrentWeight) return new Date();
+        const diff = Math.abs(safeCurrentWeight - displayTargetWeight);
         if (diff === 0) return new Date();
         const ratePerMonth = 2; // kg
         const monthsNeeded = diff / ratePerMonth;
@@ -86,7 +90,7 @@ export function Step6Target({ targetWeight, setTargetWeight, currentWeight, onNe
                 <div className="text-center mb-10 flex items-end justify-center">
                     <input
                         type="number"
-                        value={targetWeight}
+                        value={displayTargetWeight}
                         onChange={(e) => setTargetWeight(Number(e.target.value))}
                         onFocus={() => setIsFocused(true)}
                         onBlur={() => setIsFocused(false)}
