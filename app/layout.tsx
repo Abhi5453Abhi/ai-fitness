@@ -24,7 +24,6 @@ export default function RootLayout({
                 <LanguageProvider>
                     <UploadProvider>
                         {children}
-                        <UploadProgressToast />
                     </UploadProvider>
                 </LanguageProvider>
                 <Analytics />
