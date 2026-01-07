@@ -1,12 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Webcam from 'react-webcam';
+import { SwitchCamera, X } from 'lucide-react';
 import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 import * as poseDetection from '@tensorflow-models/pose-detection';
 import { useWorkoutAI } from './WorkoutAIProvider';
 
 interface PushUpCounterProps {
-    onComplete: (count: number, mode: 'normal' | 'strict') => void;
+    onComplete: (count: number, mode: 'normal') => void;
     onClose: () => void;
 }
 
@@ -15,7 +16,7 @@ export function PushUpCounter({ onComplete, onClose }: PushUpCounterProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [count, setCount] = useState(0);
     const [feedback, setFeedback] = useState("Get Ready");
-    const [mode, setMode] = useState<'normal' | 'strict'>('normal');
+    const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
 
     const [phase, setPhase] = useState<'countdown' | 'workout' | 'finished'>('countdown');
     const [startCountdown, setStartCountdown] = useState(5);
@@ -45,7 +46,7 @@ export function PushUpCounter({ onComplete, onClose }: PushUpCounterProps) {
 
     const handleComplete = () => {
         setPhase('finished');
-        onComplete(count, mode);
+        onComplete(count, 'normal');
     };
 
     // State logic moved to refs for synchronous loop updates
@@ -66,7 +67,7 @@ export function PushUpCounter({ onComplete, onClose }: PushUpCounterProps) {
                 cancelAnimationFrame(requestRef.current);
             }
         };
-    }, [detector, isModelLoading, mode, phase]); // Re-run if phase changes
+    }, [detector, isModelLoading, phase]); // Re-run if phase changes
 
     const detectPose = async () => {
         if (phase !== 'workout') return;
@@ -109,8 +110,6 @@ export function PushUpCounter({ onComplete, onClose }: PushUpCounterProps) {
         // 5: left_shoulder, 6: right_shoulder
         // 7: left_elbow, 8: right_elbow
         // 9: left_wrist, 10: right_wrist
-        // 11: left_hip, 12: right_hip
-        // 13: left_knee, 14: right_knee
 
         // ARM POINTS
         const leftShoulder = keypoints.find(k => k.name === 'left_shoulder');
@@ -121,54 +120,18 @@ export function PushUpCounter({ onComplete, onClose }: PushUpCounterProps) {
         const rightElbow = keypoints.find(k => k.name === 'right_elbow');
         const rightWrist = keypoints.find(k => k.name === 'right_wrist');
 
-        // BODY POINTS (For Strict Mode)
-        const leftHip = keypoints.find(k => k.name === 'left_hip');
-        const leftKnee = keypoints.find(k => k.name === 'left_knee');
-        const rightHip = keypoints.find(k => k.name === 'right_hip');
-        const rightKnee = keypoints.find(k => k.name === 'right_knee');
-
-        // Use the side with better visibility (higher confidence)
         let armAngle = 0;
-        let bodyAngle = 0;
-        let isRightSide = false;
 
-        // Determine side based on ARM visibility first
+        // Determine side based on ARM visibility
         if (leftShoulder && leftElbow && leftWrist &&
             (leftShoulder.score || 0) > 0.3 && (leftElbow.score || 0) > 0.3 && (leftWrist.score || 0) > 0.3) {
             armAngle = calculateAngle(leftShoulder, leftElbow, leftWrist);
-
-            if (mode === 'strict' && leftHip && leftKnee && (leftHip.score || 0) > 0.3 && (leftKnee.score || 0) > 0.3) {
-                bodyAngle = calculateAngle(leftShoulder, leftHip, leftKnee);
-            }
         } else if (rightShoulder && rightElbow && rightWrist &&
             (rightShoulder.score || 0) > 0.3 && (rightElbow.score || 0) > 0.3 && (rightWrist.score || 0) > 0.3) {
             armAngle = calculateAngle(rightShoulder, rightElbow, rightWrist);
-            isRightSide = true;
-
-            if (mode === 'strict' && rightHip && rightKnee && (rightHip.score || 0) > 0.3 && (rightKnee.score || 0) > 0.3) {
-                bodyAngle = calculateAngle(rightShoulder, rightHip, rightKnee);
-            }
         } else {
             setFeedback("Body not fully visible");
             return;
-        }
-
-        // STRICT MODE CHECKS
-        if (mode === 'strict') {
-            // Check visibility
-            const hip = isRightSide ? rightHip : leftHip;
-            const knee = isRightSide ? rightKnee : leftKnee;
-
-            if (!hip || !knee || (hip.score || 0) < 0.3 || (knee.score || 0) < 0.3) {
-                setFeedback("Show Full Body (Hips & Knees)");
-                return;
-            }
-
-            // Check alignment (Shoulder-Hip-Knee should be roughly 180, allow some slack e.g. > 150)
-            if (bodyAngle < 150) {
-                setFeedback("Straighten Your Back!");
-                return;
-            }
         }
 
         // Push-up Logic (Simple State Machine)
@@ -229,36 +192,32 @@ export function PushUpCounter({ onComplete, onClose }: PushUpCounterProps) {
 
     return (
         <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center">
-            {/* Header */}
-            <div className="absolute top-0 w-full p-4 flex justify-between items-center z-50 bg-gradient-to-b from-black/80 to-transparent">
-                <div className="text-white">
-                    <h2 className="text-xl font-bold">AI Push-Up Counter</h2>
-                    <p className="text-sm opacity-80">{feedback}</p>
-                </div>
+            {/* Header Controls */}
+            <div className="absolute top-12 left-0 right-0 z-50 flex flex-col items-center gap-6 px-4">
 
-                {/* Toggle Switch */}
-                <div className="flex bg-white/10 rounded-full p-1 mx-4">
+                {/* Timer & Camera Control Group */}
+                <div className="flex items-center gap-4">
+                    {/* Camera Toggle */}
                     <button
-                        onClick={() => setMode('normal')}
-                        className={`px-4 py-1 rounded-full text-xs font-bold transition-colors ${mode === 'normal' ? 'bg-white text-black' : 'text-white'}`}
+                        onClick={() => setFacingMode(prev => prev === 'user' ? 'environment' : 'user')}
+                        className="bg-[#BBF246] text-[#192126] w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shadow-[#BBF246]/20 active:scale-95 transition-transform"
                     >
-                        Normal
+                        <SwitchCamera className="w-6 h-6" strokeWidth={2.5} />
                     </button>
+
+                    {/* Timer */}
+                    <div className={`bg-[#BBF246] text-[#192126] h-14 px-6 rounded-2xl flex items-center justify-center font-mono text-2xl font-black shadow-lg shadow-[#BBF246]/20 ${timeLeft < 10 ? 'animate-pulse text-red-600' : ''}`}>
+                        00:{timeLeft.toString().padStart(2, '0')}
+                    </div>
+
+                    {/* Close Button */}
                     <button
-                        onClick={() => setMode('strict')}
-                        className={`px-4 py-1 rounded-full text-xs font-bold transition-colors ${mode === 'strict' ? 'bg-blue-500 text-white' : 'text-white'}`}
+                        onClick={onClose}
+                        className="bg-white/10 text-white w-14 h-14 rounded-2xl flex items-center justify-center hover:bg-white/20 backdrop-blur-md active:scale-95 transition-all"
                     >
-                        Strict
+                        <X className="w-6 h-6" strokeWidth={2.5} />
                     </button>
                 </div>
-
-                <div className={`text-xl font-black font-mono ${timeLeft < 10 ? 'text-red-500' : 'text-white'}`}>
-                    00:{timeLeft.toString().padStart(2, '0')}
-                </div>
-
-                <button onClick={onClose} className="bg-white/10 p-2 rounded-full text-white hover:bg-white/20 z-50 pointer-events-auto">
-                    ✕
-                </button>
             </div>
 
             <div className="relative w-full h-full flex items-center justify-center bg-gray-900">
@@ -290,7 +249,8 @@ export function PushUpCounter({ onComplete, onClose }: PushUpCounterProps) {
                 <Webcam
                     ref={webcamRef}
                     className="absolute w-full h-full object-cover lg:object-contain"
-                    mirrored={false}
+                    mirrored={facingMode === 'user'}
+                    videoConstraints={{ facingMode }}
                 />
                 <canvas
                     ref={canvasRef}
@@ -300,12 +260,6 @@ export function PushUpCounter({ onComplete, onClose }: PushUpCounterProps) {
                 {/* Count Overlay */}
                 {!isModelLoading && !error && phase === 'workout' && (
                     <>
-                        {mode === 'strict' && (
-                            <div className="absolute top-24 left-1/2 -translate-x-1/2 bg-blue-500/20 backdrop-blur-md px-4 py-2 rounded-full border border-blue-500/50 z-20 flex items-center gap-2">
-                                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                                <span className="text-[10px] text-blue-200 font-bold uppercase tracking-wider">Full Body Check Active</span>
-                            </div>
-                        )}
                         <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-md px-8 py-4 rounded-3xl border border-white/10 z-20 text-center">
                             <span className="text-xs text-gray-300 uppercase tracking-widest font-bold block mb-1">Reps</span>
                             <span className="text-6xl font-black text-white font-mono">{count}</span>
