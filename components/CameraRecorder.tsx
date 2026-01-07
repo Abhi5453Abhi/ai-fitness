@@ -58,7 +58,17 @@ export function CameraRecorder({ onClose, onComplete }: CameraRecorderProps) {
                 }
 
                 // Initialize MediaRecorder
-                const mediaRecorder = new MediaRecorder(s);
+                const options = {
+                    mimeType: 'video/webm;codecs=vp8,opus',
+                    videoBitsPerSecond: 2500000 // 2.5 Mbps ~ 18.75 MB / min
+                };
+
+                // Fallback if specific mimeType isn't supported
+                if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                    delete (options as any).mimeType;
+                }
+
+                const mediaRecorder = new MediaRecorder(s, options);
                 mediaRecorderRef.current = mediaRecorder;
                 chunksRef.current = [];
 
