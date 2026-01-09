@@ -114,7 +114,7 @@ export default function Home() {
     // Sync Points on Dashboard Load
     useEffect(() => {
         if (step === 17 && userId) {
-            fetch(`/api/user/sync?userId=${userId}`)
+            fetch(`/api/user/sync?userId=${encodeURIComponent(userId)}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
@@ -392,7 +392,7 @@ export default function Home() {
                             onCompleteProfile={() => setStep(1)}
                             onRefreshPoints={() => {
                                 if (userId) {
-                                    fetch(`/api/user/sync?userId=${userId}`)
+                                    fetch(`/api/user/sync?userId=${encodeURIComponent(userId)}`)
                                         .then(res => res.json())
                                         .then(data => {
                                             if (data.success) {
