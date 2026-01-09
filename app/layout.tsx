@@ -5,6 +5,8 @@ import { LanguageProvider } from "@/components/LanguageContext";
 import { UploadProvider } from "@/components/UploadContext";
 import { UploadProgressToast } from "@/components/UploadProgressToast";
 import { Analytics } from "@vercel/analytics/react"
+import { PostHogProvider } from './providers/PostHogProvider'
+import PostHogPageView from './providers/PostHogPageView'
 
 const outfit = Outfit({ subsets: ['latin'] })
 
@@ -21,11 +23,14 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${outfit.className} antialiased`} suppressHydrationWarning>
-                <LanguageProvider>
-                    <UploadProvider>
-                        {children}
-                    </UploadProvider>
-                </LanguageProvider>
+                <PostHogProvider>
+                    <LanguageProvider>
+                        <UploadProvider>
+                            <PostHogPageView />
+                            {children}
+                        </UploadProvider>
+                    </LanguageProvider>
+                </PostHogProvider>
                 <Analytics />
             </body>
         </html>
