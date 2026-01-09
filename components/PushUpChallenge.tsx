@@ -27,7 +27,7 @@ export function PushUpChallenge({ onBack, onRefreshPoints }: PushUpChallengeProp
         if (isManual) setLoading(true);
         const userId = localStorage.getItem('userId') || 'guest';
 
-        fetch(`/api/challenge/history?userId=${userId}`)
+        fetch(`/api/challenge/history?userId=${encodeURIComponent(userId)}`)
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) setHistory(data);
@@ -210,22 +210,10 @@ export function PushUpChallenge({ onBack, onRefreshPoints }: PushUpChallengeProp
                                     <div>
                                         <p className="text-xs text-gray-500 mb-1">{new Date(attempt.createdAt).toLocaleDateString()}</p>
                                         <div className="flex items-center gap-2">
-                                            {attempt.status === 'approved' ? (
-                                                <div className="text-[#BBF246] font-bold flex items-center gap-1">
-                                                    <CheckCircle className="w-4 h-4" />
-                                                    {attempt.repCount} Reps
-                                                </div>
-                                            ) : attempt.status === 'rejected' ? (
-                                                <div className="text-red-500 font-bold flex items-center gap-1">
-                                                    <XCircle className="w-4 h-4" />
-                                                    Rejected
-                                                </div>
-                                            ) : (
-                                                <div className="text-yellow-500 font-bold flex items-center gap-1">
-                                                    <AlertCircle className="w-4 h-4" />
-                                                    Pending Review
-                                                </div>
-                                            )}
+                                            <div className="text-[#BBF246] font-bold flex items-center gap-1">
+                                                <CheckCircle className="w-4 h-4" />
+                                                {attempt.repCount} Reps
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="text-xs text-gray-600 font-mono">

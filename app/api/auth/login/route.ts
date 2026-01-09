@@ -32,12 +32,7 @@ export async function POST(request: NextRequest) {
                 totalReps: sql<number>`sum(${pushUpAttempts.repCount})`
             })
             .from(pushUpAttempts)
-            .where(
-                and(
-                    eq(pushUpAttempts.userId, phoneNumber),
-                    eq(pushUpAttempts.status, 'approved')
-                )
-            );
+            .where(eq(pushUpAttempts.userId, phoneNumber));
 
         const totalReps = Number(pointsResult[0]?.totalReps) || 0;
         const points = totalReps * 2.5;

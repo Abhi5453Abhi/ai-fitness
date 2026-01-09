@@ -19,12 +19,7 @@ export async function GET(req: Request) {
                 totalReps: sql<number>`sum(${pushUpAttempts.repCount})`
             })
             .from(pushUpAttempts)
-            .where(
-                and(
-                    eq(pushUpAttempts.userId, userId),
-                    eq(pushUpAttempts.status, 'approved')
-                )
-            );
+            .where(eq(pushUpAttempts.userId, userId));
 
         const totalReps = Number(result[0]?.totalReps) || 0;
         const calculatedPoints = totalReps * 2.5;
