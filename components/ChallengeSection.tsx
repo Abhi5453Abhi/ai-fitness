@@ -1,37 +1,40 @@
-import { ChevronRight, Dumbbell } from 'lucide-react';
+import { ChevronRight, Dumbbell, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useChallengeStats } from '@/hooks/useChallengeStats';
 
 interface ChallengeSectionProps {
-    onOpenPushUpChallenge: () => void;
+    onOpenPushUpChallenge: (todayAttempts: number) => void;
 }
 
 export function ChallengeSection({ onOpenPushUpChallenge }: ChallengeSectionProps) {
-    const [userAttempts, setUserAttempts] = useState(0);
+    const [todayAttempts, setTodayAttempts] = useState(0);
+    const [loading, setLoading] = useState(true);
     const { participantCount } = useChallengeStats();
 
     useEffect(() => {
-        // Fetch attempt count
+        // Fetch today's attempt count
         const userId = localStorage.getItem('userId') || 'guest';
-        fetch(`/api/challenge/history?userId=${userId}`)
+        setLoading(true);
+        fetch(`/api/challenge/history?userId=${encodeURIComponent(userId)}`)
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) {
-                    setUserAttempts(data.length);
+                    setTodayAttempts(data.length);
                 }
             })
-            .catch(err => console.error("Failed to fetch attempts", err));
+            .catch(err => console.error("Failed to fetch attempts", err))
+            .finally(() => setLoading(false));
     }, []);
 
-    const attemptsLeft = 2 - userAttempts;
+    const attemptsLeft = 2 - todayAttempts;
 
     return (
         <div className="flex-1 overflow-y-auto px-6 pb-28 no-scrollbar">
             <h2 className="text-2xl font-black text-[#192126] mb-6 mt-4">Challenges</h2>
 
             <div
-                onClick={onOpenPushUpChallenge}
-                className="bg-[#192126] rounded-3xl p-6 text-white relative overflow-hidden active:scale-95 transition-transform cursor-pointer shadow-lg shadow-gray-200"
+                onClick={() => !loading && onOpenPushUpChallenge(todayAttempts)}
+                className={`bg-[#192126] rounded-3xl p-6 text-white relative overflow-hidden transition-transform cursor-pointer shadow-lg shadow-gray-200 ${loading ? 'opacity-80' : 'active:scale-95'}`}
             >
                 {/* Background Decoration */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
@@ -62,12 +65,20 @@ export function ChallengeSection({ onOpenPushUpChallenge }: ChallengeSectionProp
                         </span>
                     </div>
 
-                    <span className={`text-xs font-bold px-3 py-1.5 rounded-lg border ${attemptsLeft <= 0
+                    {/* Attempts Badge with Loading */}
+                    {loading ? (
+                        <span className="text-xs font-bold px-3 py-1.5 rounded-lg border bg-white/10 text-white border-white/10 flex items-center gap-1.5">
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                            LOADING...
+                        </span>
+                    ) : (
+                        <span className={`text-xs font-bold px-3 py-1.5 rounded-lg border ${attemptsLeft <= 0
                             ? 'bg-red-500/10 text-red-500 border-red-500/20'
                             : 'bg-white/10 text-white border-white/10'
-                        }`}>
-                        {attemptsLeft <= 0 ? 'COMPLETED' : `${attemptsLeft} ATTEMPTS LEFT`}
-                    </span>
+                            }`}>
+                            {attemptsLeft <= 0 ? 'COMPLETED TODAY' : `${attemptsLeft} ATTEMPTS LEFT`}
+                        </span>
+                    )}
                 </div>
             </div>
 
