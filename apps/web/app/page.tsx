@@ -356,7 +356,7 @@ export default function Home() {
                             <Step10Processing
                                 userData={{
                                     name, selectedGoals, gender: gender || 'other',
-                                    age: age ?? 25, // Fallback for AI Plan Generation (it needs numbers)
+                                    age: age ?? 25,
                                     height: height ?? 170,
                                     weight: weight ?? 70,
                                     targetWeight: targetWeight ?? 65,
@@ -370,7 +370,6 @@ export default function Home() {
                                 }}
                                 setPlanData={setPlanData}
                                 onNext={() => {
-                                    // 5-10 minute delay
                                     const delay = (Math.floor(Math.random() * 6) + 5) * 60 * 1000;
                                     setPlanReadyTime(Date.now() + delay);
                                     setStep(16);
