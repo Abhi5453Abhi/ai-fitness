@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 interface PushUpChallengeProps {
     onBack: () => void;
     onRefreshPoints?: () => void;
+    initialTodayAttempts?: number;
 }
 
 interface Attempt {
@@ -15,27 +16,36 @@ interface Attempt {
     createdAt: string;
 }
 
-export function PushUpChallenge({ onBack, onRefreshPoints }: PushUpChallengeProps) {
+export function PushUpChallenge({ onBack, onRefreshPoints, initialTodayAttempts = 0 }: PushUpChallengeProps) {
     const { participantCount, joinChallenge } = useChallengeStats();
     const [isRecording, setIsRecording] = useState(false);
     const [view, setView] = useState<'instructions' | 'history' | 'report'>('instructions');
     const [history, setHistory] = useState<Attempt[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [todayAttempts, setTodayAttempts] = useState(initialTodayAttempts); // Use initial from parent
+    const [loading, setLoading] = useState(false); // Start false, we have initial data
     const [lastResult, setLastResult] = useState<{ count: number; points: number } | null>(null);
 
+    // Fetch all-time history (for display only)
     const fetchHistory = (isManual = false) => {
         if (isManual) setLoading(true);
         const userId = localStorage.getItem('userId') || 'guest';
 
-        fetch(`/api/challenge/history?userId=${encodeURIComponent(userId)}`)
+        // Fetch all-time history for display
+        fetch(`/api/challenge/history?userId=${encodeURIComponent(userId)}&allTime=true`)
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) setHistory(data);
             })
             .catch(err => console.error(err))
-            .finally(() => {
-                setLoading(false);
-            });
+            .finally(() => setLoading(false));
+
+        // Also re-fetch today's count
+        fetch(`/api/challenge/history?userId=${encodeURIComponent(userId)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) setTodayAttempts(data.length);
+            })
+            .catch(err => console.error(err));
     };
 
     // Fetch on mount to update limit button text
@@ -230,10 +240,10 @@ export function PushUpChallenge({ onBack, onRefreshPoints }: PushUpChallengeProp
             {view === 'instructions' && (
                 <div className="p-6 pb-10 bg-gradient-to-t from-[#192126] to-transparent">
                     <button
-                        disabled={loading || history.length >= 2}
+                        disabled={loading || todayAttempts >= 2}
                         onClick={handleJoin}
                         className={`w-full py-4 rounded-2xl font-black text-lg tracking-wide flex items-center justify-center gap-2 transition-all 
-                            ${loading || history.length >= 2
+                            ${loading || todayAttempts >= 2
                                 ? 'bg-white/10 text-gray-400 cursor-not-allowed'
                                 : 'bg-[#BBF246] text-[#192126] hover:bg-[#a6d93b] active:scale-[0.98] shadow-lg shadow-[#BBF246]/20'
                             }`}
@@ -243,10 +253,10 @@ export function PushUpChallenge({ onBack, onRefreshPoints }: PushUpChallengeProp
                                 <Loader2 className="w-5 h-5 animate-spin" />
                                 CHECKING ELIGIBILITY...
                             </>
-                        ) : history.length >= 2 ? (
-                            'MAX ATTEMPTS REACHED'
+                        ) : todayAttempts >= 2 ? (
+                            'MAX ATTEMPTS FOR TODAY'
                         ) : (
-                            `RECORD ATTEMPT (${2 - history.length} LEFT)`
+                            `RECORD ATTEMPT (${2 - todayAttempts} LEFT TODAY)`
                         )}
                     </button>
                     {participantCount !== null && (

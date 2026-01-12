@@ -241,8 +241,8 @@ export function Step3Motivation({ selectedGoals = [], onNext, onBack, onSkip }: 
 
 
     return (
-        <div className="flex flex-col h-full bg-white text-[#192126]">
-            <div className="p-6 pb-0">
+        <div className="flex flex-col h-full bg-white text-[#192126] overflow-y-auto">
+            <div className="p-6 pb-0 flex-shrink-0">
                 <div className="flex items-center mb-6">
                     <span className="mx-auto text-lg font-bold text-gray-400">3/10</span>
                 </div>
@@ -285,7 +285,7 @@ export function Step3Motivation({ selectedGoals = [], onNext, onBack, onSkip }: 
 
             </motion.div>
 
-            <div className="p-6 mt-auto flex items-center gap-4 border-t border-gray-100 bg-white">
+            <div className="p-6 flex-shrink-0 flex items-center gap-4 border-t border-gray-100 bg-white sticky bottom-0">
                 <button onClick={onBack} className="p-4 rounded-full hover:bg-gray-100 transition-colors shrink-0">
                     <ArrowLeft className="w-6 h-6 text-[#192126]" />
                 </button>

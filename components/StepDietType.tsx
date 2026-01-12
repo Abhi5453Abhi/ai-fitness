@@ -20,7 +20,7 @@ export function StepDietType({ dietType, setDietType, onNext, onBack, onSkip }: 
     const { t } = useLanguage();
 
     return (
-        <div className="flex flex-col h-full p-6 bg-white text-[#192126]">
+        <div className="flex flex-col h-full p-6 bg-white text-[#192126] overflow-y-auto">
             {/* Header */}
             <div className="flex items-center mb-6">
                 <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">

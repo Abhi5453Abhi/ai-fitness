@@ -46,7 +46,7 @@ export function Step9Pledge({ pledgeDays, setPledgeDays, onNext, onBack, onSkip 
     };
 
     return (
-        <div className="flex flex-col h-full p-6 bg-white text-[#192126]">
+        <div className="flex flex-col h-full p-6 bg-white text-[#192126] overflow-y-auto">
             <div className="flex items-center mb-6">
                 <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                     <ArrowLeft className="w-5 h-5 text-[#192126]" />

@@ -8,7 +8,7 @@ import { BottomNav } from './BottomNav';
 import { ChallengeSection } from './ChallengeSection';
 import { PushUpChallenge } from './PushUpChallenge';
 import { Store } from './Store';
-import { UploadProgressToast } from './UploadProgressToast';
+
 import { WorkoutAIProvider } from './WorkoutAIProvider';
 
 interface Meal {
@@ -54,6 +54,7 @@ export function Dashboard({ name, points, planData, planReadyTime, onCompletePro
     // Navigation State
     const [activeTab, setActiveTab] = useState<'meal' | 'challenge' | 'store'>('meal');
     const [showPushUpChallenge, setShowPushUpChallenge] = useState(false);
+    const [todayAttempts, setTodayAttempts] = useState(0);
 
     const getGreeting = () => {
         const hour = new Date().getHours();
@@ -99,7 +100,10 @@ export function Dashboard({ name, points, planData, planReadyTime, onCompletePro
                     <MealPlanner planData={planData} planReadyTime={planReadyTime} onCompleteProfile={onCompleteProfile} />
                 )}
                 {activeTab === 'challenge' && (
-                    <ChallengeSection onOpenPushUpChallenge={() => setShowPushUpChallenge(true)} />
+                    <ChallengeSection onOpenPushUpChallenge={(attempts) => {
+                        setTodayAttempts(attempts);
+                        setShowPushUpChallenge(true);
+                    }} />
                 )}
                 {activeTab === 'store' && (
                     <Store />
@@ -110,11 +114,14 @@ export function Dashboard({ name, points, planData, planReadyTime, onCompletePro
 
                 {/* Full Screen Modals */}
                 {showPushUpChallenge && (
-                    <PushUpChallenge onBack={() => setShowPushUpChallenge(false)} onRefreshPoints={onRefreshPoints} />
+                    <PushUpChallenge
+                        onBack={() => setShowPushUpChallenge(false)}
+                        onRefreshPoints={onRefreshPoints}
+                        initialTodayAttempts={todayAttempts}
+                    />
                 )}
 
-                {/* Upload Progress Toast - Only visible in Challenge Tab */}
-                {activeTab === 'challenge' && <UploadProgressToast />}
+
 
                 <ActionMenu
                     isOpen={isMenuOpen}

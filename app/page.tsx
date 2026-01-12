@@ -10,7 +10,6 @@ import { Step6Target } from '@/components/Step6Target'
 import { StepRate } from '@/components/StepRate'
 import { StepDietType } from '@/components/StepDietType'
 import { StepCurrentFood } from '@/components/StepCurrentFood'
-import { StepDailyRoutine } from '@/components/StepDailyRoutine'
 import { StepHealth } from '@/components/StepHealth'
 import { StepHabits } from '@/components/StepHabits'
 import { Step7Activity } from '@/components/Step7Activity'
@@ -113,7 +112,7 @@ export default function Home() {
 
     // Sync Points on Dashboard Load
     useEffect(() => {
-        if (step === 17 && userId) {
+        if (step === 16 && userId) {
             fetch(`/api/user/sync?userId=${encodeURIComponent(userId)}`)
                 .then(res => res.json())
                 .then(data => {
@@ -246,13 +245,13 @@ export default function Home() {
             console.error("Failed to save partial profile on skip", err);
         }
 
-        setStep(17);
+        setStep(16);
         setPlanReadyTime(Date.now());
     }
 
     return (
         <div className="w-full min-h-screen bg-gray-50 text-[#192126] flex justify-center overflow-hidden font-sans relative">
-            {step === 16 && <BackgroundAnimation />}
+            {step === 15 && <BackgroundAnimation />}
             <div className="w-full max-w-md h-screen relative bg-transparent sm:border-x sm:border-gray-200 shadow-2xl shadow-gray-200/50 z-10">
                 {!isAuthenticated ? (
                     <Login onLoginSuccess={(token: string, uid: string, existingData?: any) => {
@@ -300,7 +299,7 @@ export default function Home() {
                             if (plan) {
                                 setPlanData(plan);
                                 setPlanReadyTime(Date.now()); // Already ready
-                                setStep(17); // Jump to Dashboard
+                                setStep(16); // Jump to Dashboard
                             }
                         }
                     }} />
@@ -337,15 +336,6 @@ export default function Home() {
                             />
                         )}
                         {step === 10 && (
-                            <StepDailyRoutine
-                                wakeTime={wakeTime} setWakeTime={setWakeTime}
-                                workTime={workTime} setWorkTime={setWorkTime}
-                                sleepTime={sleepTime} setSleepTime={setSleepTime}
-                                onNext={handleNext} onBack={handleBack}
-                                onSkip={handleSkip}
-                            />
-                        )}
-                        {step === 11 && (
                             <StepHealth
                                 healthIssues={healthIssues} setHealthIssues={setHealthIssues}
                                 allergies={allergies} setAllergies={setAllergies}
@@ -354,12 +344,12 @@ export default function Home() {
                             />
                         )}
 
-                        {step === 12 && <StepHabits habits={habits} setHabits={setHabits} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
-                        {step === 13 && <Step7Activity activityLevel={activityLevel} setActivityLevel={setActivityLevel} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
-                        {step === 14 && <Step8Barriers barriers={barriers} setBarriers={setBarriers} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
-                        {step === 15 && <Step9Pledge pledgeDays={pledgeDays} setPledgeDays={setPledgeDays} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
+                        {step === 11 && <StepHabits habits={habits} setHabits={setHabits} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
+                        {step === 12 && <Step7Activity activityLevel={activityLevel} setActivityLevel={setActivityLevel} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
+                        {step === 13 && <Step8Barriers barriers={barriers} setBarriers={setBarriers} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
+                        {step === 14 && <Step9Pledge pledgeDays={pledgeDays} setPledgeDays={setPledgeDays} onNext={handleNext} onBack={handleBack} onSkip={handleSkip} />}
 
-                        {step === 16 && (
+                        {step === 15 && (
                             <Step10Processing
                                 userData={{
                                     name, selectedGoals, gender: gender || 'other',
@@ -380,11 +370,11 @@ export default function Home() {
                                     // 5-10 minute delay
                                     const delay = (Math.floor(Math.random() * 6) + 5) * 60 * 1000;
                                     setPlanReadyTime(Date.now() + delay);
-                                    setStep(17);
+                                    setStep(16);
                                 }}
                             />
                         )}
-                        {step === 17 && <Dashboard
+                        {step === 16 && <Dashboard
                             name={name}
                             points={points}
                             planData={planData}
@@ -407,19 +397,6 @@ export default function Home() {
                 )}
 
 
-
-                {/* Reset Debug Button */}
-                <button
-                    onClick={() => {
-                        if (confirm('Are you sure you want to reset all progress?')) {
-                            localStorage.removeItem(STORAGE_KEY)
-                            window.location.reload()
-                        }
-                    }}
-                    className="absolute bottom-2 right-2 text-xs text-gray-300 hover:text-red-400 opacity-50 hover:opacity-100 transition-opacity z-50"
-                >
-                    Reset Progress
-                </button>
             </div>
         </div >
     )

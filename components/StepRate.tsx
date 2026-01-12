@@ -22,7 +22,7 @@ export function StepRate({ weeklyRate, setWeeklyRate, onNext, onBack, onSkip }: 
     const { t } = useLanguage();
 
     return (
-        <div className="flex flex-col h-full p-6 bg-white text-[#192126]">
+        <div className="flex flex-col h-full p-6 bg-white text-[#192126] overflow-y-auto">
             <div className="flex items-center mb-6">
                 <button onClick={onBack} className="p-2 rounded-full bg-[#1F2937] hover:bg-[#374151]">
                     <ArrowLeft className="w-5 h-5 text-white" />

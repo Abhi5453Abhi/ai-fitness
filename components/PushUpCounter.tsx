@@ -22,9 +22,12 @@ export function PushUpCounter({ onComplete, onClose }: PushUpCounterProps) {
     const [startCountdown, setStartCountdown] = useState(5);
     const [timeLeft, setTimeLeft] = useState(60);
 
-    // Initial 5s Countdown
+    // Use Global Context - must be before useEffect that uses these values
+    const { detector, isModelLoading, error } = useWorkoutAI();
+
+    // Initial 5s Countdown - Only start after model is loaded
     useEffect(() => {
-        if (phase === 'countdown') {
+        if (phase === 'countdown' && !isModelLoading) {
             if (startCountdown > 0) {
                 const timer = setTimeout(() => setStartCountdown(prev => prev - 1), 1000);
                 return () => clearTimeout(timer);
@@ -32,7 +35,7 @@ export function PushUpCounter({ onComplete, onClose }: PushUpCounterProps) {
                 setPhase('workout');
             }
         }
-    }, [phase, startCountdown]);
+    }, [phase, startCountdown, isModelLoading]);
 
     // 60s Workout Timer
     useEffect(() => {
@@ -51,9 +54,6 @@ export function PushUpCounter({ onComplete, onClose }: PushUpCounterProps) {
 
     // State logic moved to refs for synchronous loop updates
     const isDownRef = useRef(false);
-
-    // Use Global Context
-    const { detector, isModelLoading, error } = useWorkoutAI();
     const requestRef = useRef<number>(0);
 
     useEffect(() => {
