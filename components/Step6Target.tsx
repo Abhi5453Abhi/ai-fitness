@@ -63,7 +63,7 @@ export function Step6Target({ targetWeight, setTargetWeight, currentWeight, onNe
     const monthName = goalDate.toLocaleString('default', { month: 'long' });
 
     return (
-        <div className="flex flex-col h-full p-6 select-none overflow-hidden bg-white text-[#192126]">
+        <div className="flex flex-col h-full p-6 select-none overflow-y-auto bg-white text-[#192126]">
             <div className="flex items-center mb-6">
                 <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                     <ArrowLeft className="w-5 h-5 text-[#192126]" />
@@ -83,24 +83,24 @@ export function Step6Target({ targetWeight, setTargetWeight, currentWeight, onNe
                 animate={{ opacity: 1, scale: 1 }}
                 className="flex-1 flex flex-col items-center justify-center relative"
             >
-                <h1 className="text-2xl font-black mb-2 text-center text-[#192126]">Set your goal.</h1>
-                <p className="text-[#5E6468] mb-12 text-center font-medium">Slide or type to adjust.</p>
+                <h1 className="text-xl sm:text-2xl font-black mb-2 text-center text-[#192126]">Set your goal.</h1>
+                <p className="text-[#5E6468] mb-6 sm:mb-12 text-center font-medium">Slide or type to adjust.</p>
 
                 {/* Manual Input Display */}
-                <div className="text-center mb-10 flex items-end justify-center">
+                <div className="text-center mb-6 sm:mb-10 flex items-end justify-center">
                     <input
                         type="number"
                         value={displayTargetWeight}
                         onChange={(e) => setTargetWeight(Number(e.target.value))}
                         onFocus={() => setIsFocused(true)}
                         onBlur={() => setIsFocused(false)}
-                        className={`text-8xl font-black tracking-tighter bg-transparent text-center w-48 outline-none p-0 m-0 ${isFocused ? 'text-[#BBF246]' : 'text-[#192126]'} transition-colors`}
+                        className={`text-5xl sm:text-8xl font-black tracking-tighter bg-transparent text-center w-36 sm:w-48 outline-none p-0 m-0 ${isFocused ? 'text-[#BBF246]' : 'text-[#192126]'} transition-colors`}
                     />
-                    <span className="text-xl text-gray-400 font-bold ml-2 mb-4">kg</span>
+                    <span className="text-lg sm:text-xl text-gray-400 font-bold ml-2 mb-2 sm:mb-4">kg</span>
                 </div>
 
                 {/* Tape Measure Container */}
-                <div className="relative w-full h-24 flex items-center justify-center overflow-hidden mb-8">
+                <div className="relative w-full h-16 sm:h-24 flex items-center justify-center overflow-hidden mb-4 sm:mb-8">
                     {/* Gradient Masks (White fade) */}
                     <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white to-transparent z-20 pointer-events-none"></div>
                     <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent z-20 pointer-events-none"></div>

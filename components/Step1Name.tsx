@@ -14,7 +14,7 @@ interface Step1NameProps {
 export function Step1Name({ name, setName, onNext, onBack, onSkip }: Step1NameProps) {
     const { t } = useLanguage();
     return (
-        <div className="flex flex-col h-full p-6 text-[#192126] bg-white">
+        <div className="flex flex-col h-full p-6 text-[#192126] bg-white overflow-y-auto">
             <div className="flex items-center mb-8">
                 <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                     <ArrowLeft className="w-6 h-6 text-[#192126]" />

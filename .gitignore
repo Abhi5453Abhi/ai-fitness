@@ -34,3 +34,5 @@ out/
 
 # TypeScript
 tsconfig.tsbuildinfo
+.vercel
+.env*.local

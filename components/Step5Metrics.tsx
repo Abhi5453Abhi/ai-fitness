@@ -24,7 +24,7 @@ export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onB
     const displayWeight = weight ?? 70;
 
     return (
-        <div className="flex flex-col h-full p-6 bg-white text-[#192126]">
+        <div className="flex flex-col h-full p-6 bg-white text-[#192126] overflow-y-auto">
             <div className="flex items-center mb-6">
                 <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                     <ArrowLeft className="w-5 h-5 text-[#192126]" />
@@ -49,19 +49,19 @@ export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onB
                 {/* Height Section */}
                 <div className="flex flex-col items-center">
                     <label className="text-gray-400 font-bold uppercase tracking-wider text-xs mb-2">{t.label_height}</label>
-                    <div className="relative flex items-end justify-center mb-6">
+                    <div className="relative flex items-end justify-center mb-4 sm:mb-6">
                         <input
                             type="number"
                             value={displayHeight}
                             onChange={(e) => setHeight(Number(e.target.value))}
                             onFocus={() => setFocusedInput('height')}
                             onBlur={() => setFocusedInput(null)}
-                            className={`text-7xl font-black bg-transparent text-center w-48 outline-none p-0 m-0 ${focusedInput === 'height' ? 'text-[#BBF246]' : 'text-[#192126]'} transition-colors`}
+                            className={`text-5xl sm:text-7xl font-black bg-transparent text-center w-36 sm:w-48 outline-none p-0 m-0 ${focusedInput === 'height' ? 'text-[#BBF246]' : 'text-[#192126]'} transition-colors`}
                         />
-                        <span className="text-xl text-gray-400 font-bold mb-4 ml-1">{t.unit_cm}</span>
+                        <span className="text-lg sm:text-xl text-gray-400 font-bold mb-2 sm:mb-4 ml-1">{t.unit_cm}</span>
                     </div>
 
-                    <div className="w-full h-24 relative opacity-50 hover:opacity-100 transition-opacity">
+                    <div className="w-full h-16 sm:h-24 relative opacity-50 hover:opacity-100 transition-opacity">
                         <TapeMeasure
                             value={displayHeight}
                             onChange={setHeight}
@@ -80,19 +80,19 @@ export function Step5Metrics({ height, setHeight, weight, setWeight, onNext, onB
                 {/* Weight Section */}
                 <div className="flex flex-col items-center">
                     <label className="text-gray-400 font-bold uppercase tracking-wider text-xs mb-2">{t.label_weight}</label>
-                    <div className="relative flex items-end justify-center mb-6">
+                    <div className="relative flex items-end justify-center mb-4 sm:mb-6">
                         <input
                             type="number"
                             value={displayWeight}
                             onChange={(e) => setWeight(Number(e.target.value))}
                             onFocus={() => setFocusedInput('weight')}
                             onBlur={() => setFocusedInput(null)}
-                            className={`text-7xl font-black bg-transparent text-center w-48 outline-none p-0 m-0 ${focusedInput === 'weight' ? 'text-[#BBF246]' : 'text-[#192126]'} transition-colors`}
+                            className={`text-5xl sm:text-7xl font-black bg-transparent text-center w-36 sm:w-48 outline-none p-0 m-0 ${focusedInput === 'weight' ? 'text-[#BBF246]' : 'text-[#192126]'} transition-colors`}
                         />
-                        <span className="text-xl text-gray-400 font-bold mb-4 ml-1">{t.unit_kg}</span>
+                        <span className="text-lg sm:text-xl text-gray-400 font-bold mb-2 sm:mb-4 ml-1">{t.unit_kg}</span>
                     </div>
 
-                    <div className="w-full h-24 relative opacity-50 hover:opacity-100 transition-opacity">
+                    <div className="w-full h-16 sm:h-24 relative opacity-50 hover:opacity-100 transition-opacity">
                         <TapeMeasure
                             value={displayWeight}
                             onChange={setWeight}

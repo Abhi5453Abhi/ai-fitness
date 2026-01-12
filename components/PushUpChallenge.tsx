@@ -27,7 +27,7 @@ export function PushUpChallenge({ onBack, onRefreshPoints }: PushUpChallengeProp
         if (isManual) setLoading(true);
         const userId = localStorage.getItem('userId') || 'guest';
 
-        fetch(`/api/challenge/history?userId=${encodeURIComponent(userId)}`)
+        fetch(`/api/challenge/history?userId=${encodeURIComponent(userId)}&allTime=true`)
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) setHistory(data);

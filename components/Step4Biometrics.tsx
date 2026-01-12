@@ -51,7 +51,7 @@ export function Step4Biometrics({ gender, setGender, age, setAge, onNext, onBack
     };
 
     return (
-        <div className="flex flex-col h-full p-6 select-none overflow-hidden bg-white text-[#192126]">
+        <div className="flex flex-col h-full p-6 select-none overflow-y-auto bg-white text-[#192126]">
             <div className="flex items-center mb-6">
                 <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                     <ArrowLeft className="w-5 h-5 text-[#192126]" />
@@ -78,20 +78,20 @@ export function Step4Biometrics({ gender, setGender, age, setAge, onNext, onBack
                 <h1 className="text-2xl font-black mb-2 text-center tracking-tight">{t.step4_title}</h1>
                 <p className="text-[#5E6468] mb-8 text-center font-medium">{t.step4_subtitle}</p>
 
-                {/* Gender Selection */}
-                <div className="grid grid-cols-2 gap-4 mb-12">
+                {/* Gender Selection - Smaller on mobile */}
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-8 sm:mb-12">
                     {['male', 'female'].map((g) => (
                         <button
                             key={g}
                             onClick={() => setGender(g as any)}
-                            className={`p-6 rounded-3xl border-2 transition-all duration-300 relative overflow-hidden group ${gender === g ? 'bg-[#192126] border-[#192126] shadow-xl' : 'bg-white border-gray-100 hover:border-gray-200'
+                            className={`p-4 sm:p-6 rounded-3xl border-2 transition-all duration-300 relative overflow-hidden group ${gender === g ? 'bg-[#192126] border-[#192126] shadow-xl' : 'bg-white border-gray-100 hover:border-gray-200'
                                 }`}
                         >
-                            <div className="relative z-10 mb-2 flex justify-center">
+                            <div className="relative z-10 mb-1 sm:mb-2 flex justify-center">
                                 {g === 'male' ? (
-                                    <User className={`w-12 h-12 ${gender === g ? 'text-[#BBF246]' : 'text-gray-400'}`} />
+                                    <User className={`w-8 h-8 sm:w-12 sm:h-12 ${gender === g ? 'text-[#BBF246]' : 'text-gray-400'}`} />
                                 ) : (
-                                    <User className={`w-12 h-12 ${gender === g ? 'text-[#BBF246]' : 'text-gray-400'}`} />
+                                    <User className={`w-8 h-8 sm:w-12 sm:h-12 ${gender === g ? 'text-[#BBF246]' : 'text-gray-400'}`} />
                                 )}
                             </div>
                             <span className={`text-lg font-bold capitalize relative z-10 ${gender === g ? 'text-white' : 'text-gray-400'}`}>
@@ -105,16 +105,16 @@ export function Step4Biometrics({ gender, setGender, age, setAge, onNext, onBack
                 <div className="flex flex-col items-center">
                     <label className="text-gray-400 block mb-4 text-center font-bold uppercase tracking-wider text-xs">{t.age_label}</label>
 
-                    {/* Big Number Display */}
-                    <div className="text-center mb-6">
-                        <span className="text-6xl font-black tracking-tighter text-[#192126] tabular-nums">
+                    {/* Big Number Display - Responsive sizing */}
+                    <div className="text-center mb-4 sm:mb-6">
+                        <span className="text-4xl sm:text-6xl font-black tracking-tighter text-[#192126] tabular-nums">
                             {displayAge}
                         </span>
-                        <span className="text-xl text-gray-400 font-bold ml-2">{t.years_old}</span>
+                        <span className="text-lg sm:text-xl text-gray-400 font-bold ml-2">{t.years_old}</span>
                     </div>
 
-                    {/* Tape Measure Container */}
-                    <div className="relative w-full h-24 flex items-center justify-center overflow-hidden mb-8">
+                    {/* Tape Measure Container - Smaller on mobile */}
+                    <div className="relative w-full h-16 sm:h-24 flex items-center justify-center overflow-hidden mb-4 sm:mb-8">
                         {/* Gradient Masks (White fade) */}
                         <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white to-transparent z-20 pointer-events-none"></div>
                         <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent z-20 pointer-events-none"></div>

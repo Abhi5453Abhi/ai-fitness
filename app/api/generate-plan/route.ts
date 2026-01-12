@@ -183,8 +183,32 @@ export async function POST(request: NextRequest) {
 
             let content = data.choices[0].message.content
 
-            // Clean markdown block if present
-            content = content.replace(/^```json\n?/, '').replace(/\n?```$/, '').trim()
+            // Log raw response for debugging
+            console.log('Raw AI response (first 500 chars):', content.substring(0, 500));
+
+            // Clean markdown block if present (handle various formats)
+            content = content.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim()
+
+            // Sometimes AI adds extra text before/after JSON - extract just the JSON object
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) {
+                console.error('No JSON object found in response:', content);
+                throw new Error('AI response did not contain valid JSON');
+            }
+            content = jsonMatch[0];
+
+            // Sanitize control characters ONLY inside string values
+            // Replace unescaped control characters within quoted strings
+            content = content.replace(/"([^"\\]*(\\.[^"\\]*)*)"/g, (match: string) => {
+                return match.replace(/[\x00-\x1F\x7F]/g, (char: string) => {
+                    switch (char) {
+                        case '\n': return '\\n';
+                        case '\r': return '\\r';
+                        case '\t': return '\\t';
+                        default: return '';
+                    }
+                });
+            });
 
             // Parse and return the plan
             plan = JSON.parse(content)
