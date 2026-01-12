@@ -299,7 +299,7 @@ export default function Home() {
                             if (plan) {
                                 setPlanData(plan);
                                 setPlanReadyTime(Date.now()); // Already ready
-                                setStep(17); // Jump to Dashboard
+                                setStep(16); // Jump to Dashboard
                             }
                         }
                     }} />
