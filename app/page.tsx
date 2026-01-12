@@ -72,7 +72,10 @@ export default function Home() {
                 const parsed = JSON.parse(saved)
                 setIsAuthenticated(parsed.isAuthenticated ?? false)
                 setUserId(parsed.userId ?? null)
-                setStep(parsed.step ?? 1)
+                // Clamp step to valid range (1-16). Step 17+ was old Dashboard, now at 16.
+                const savedStep = parsed.step ?? 1;
+                const validStep = savedStep > 16 ? 16 : (savedStep < 1 ? 1 : savedStep);
+                setStep(validStep)
                 setName(parsed.name ?? '')
                 setSelectedGoals(parsed.selectedGoals ?? [])
                 setGender(parsed.gender ?? null)
