@@ -36,3 +36,7 @@ out/
 tsconfig.tsbuildinfo
 .vercel
 .env*.local
+
+# Expo
+.expo/
+expo-env.d.ts
