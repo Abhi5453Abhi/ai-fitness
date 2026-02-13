@@ -1,85 +1,136 @@
-import React from 'react';
-import { ShoppingBag, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Wallet, History, AlertCircle } from 'lucide-react';
+import { WithdrawModal } from './WithdrawModal';
+import { WithdrawHistory } from './WithdrawHistory';
 
-/*
-const MOCK_PRODUCTS = [
-    {
-        id: 1,
-        name: "Apple AirPods",
-        points: 500,
-        image: "/images/airpods.png"
-    },
-    {
-        id: 2,
-        name: "Apple Watch Series 9",
-        points: 5000,
-        image: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&q=80&w=300&h=300"
-    }
-];
-*/
+interface StoreProps {
+    userId: string;
+    currentPoints: number;
+}
 
-export const Store = () => {
+export const Store = ({ userId, currentPoints }: StoreProps) => {
+    const [eligibility, setEligibility] = useState<any>(null);
+    const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+    const [showHistory, setShowHistory] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        fetchEligibility();
+    }, [userId]);
+
+    const fetchEligibility = async () => {
+        const res = await fetch(`/api/withdraw/eligibility?userId=${userId}`);
+        const data = await res.json();
+        setEligibility(data);
+    };
+
     return (
-        <div className="h-full overflow-y-auto pb-24 p-6 flex flex-col">
-            {/* Header */}
+        <div className="h-full overflow-y-auto pb-24 p-6">
             <div className="mb-8">
-                <h1 className="text-3xl font-black mb-2 text-[#192126]">Rewards Store</h1>
-                <p className="text-gray-500 font-medium">Redeem your hard-earned points.</p>
+                <h1 className="text-3xl font-black mb-2 text-[#192126]">Withdraw</h1>
+                <p className="text-gray-500 font-medium">Convert your points to real money</p>
             </div>
 
-            {/* Coming Soon Message */}
-            <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
-                <div className="bg-[#BBF246]/20 rounded-full p-6 mb-6">
-                    <Sparkles className="w-16 h-16 text-[#BBF246]" />
+            {/* Current Balance Card */}
+            <div className="bg-gradient-to-br from-[#BBF246] to-[#a6d93b] rounded-3xl p-6 mb-6 text-[#192126]">
+                <p className="text-sm font-bold opacity-80 mb-1">Available Balance</p>
+                <div className="flex items-baseline gap-2 mb-4">
+                    <h2 className="text-5xl font-black">{currentPoints}</h2>
+                    <span className="text-xl font-bold opacity-80">points</span>
                 </div>
-                <h2 className="text-2xl font-black text-[#192126] mb-3">Getting Items Ready!</h2>
-                <p className="text-gray-600 font-medium text-base max-w-xs mb-2">
-                    We're preparing some exciting rewards for you.
-                </p>
-                <p className="text-gray-500 text-sm max-w-xs">
-                    Stay tuned — amazing items are on the way. Keep stacking those points!
-                </p>
-            </div>
-
-            {/* Teaser */}
-            <div className="mt-auto bg-[#BBF246]/10 rounded-3xl p-6 text-center border border-[#BBF246]/20">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                    <ShoppingBag className="w-4 h-4 text-[#BBF246]" />
-                    <p className="text-[#192126] font-bold text-sm">Store Opening Soon!</p>
+                <div className="flex items-center gap-2 bg-black/10 rounded-full px-3 py-1.5 w-fit">
+                    <Wallet className="w-4 h-4" />
+                    <span className="text-sm font-bold">= ₹{(currentPoints / 10).toFixed(0)}</span>
                 </div>
-                <p className="text-gray-500 text-xs">Keep pushing to stack up points while you wait.</p>
             </div>
 
-            {/* 
-            Commented out product grid - uncomment when ready to show items
-            <div className="grid grid-cols-2 gap-4">
-                {MOCK_PRODUCTS.map(product => (
-                    <div key={product.id} className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 flex flex-col relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <Lock className="w-8 h-8 mb-2 text-[#BBF246]" />
-                            <span className="font-bold text-sm tracking-wider uppercase">Coming Soon</span>
-                        </div>
-                        <div className="aspect-square rounded-2xl overflow-hidden mb-3 bg-gray-50">
-                            <img
-                                src={product.image}
-                                alt={product.name}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                            />
-                        </div>
-                        <div className="mt-auto">
-                            <h3 className="font-bold text-[#192126] text-sm leading-tight mb-1">{product.name}</h3>
-                            <div className="flex items-center gap-1 text-[#BBF246] font-black text-xs">
-                                <ShoppingBag className="w-3 h-3" />
-                                {product.points} PTS
+            {/* Eligibility Status */}
+            {eligibility && (
+                <>
+                    {eligibility.eligible ? (
+                        <button
+                            onClick={() => setShowWithdrawModal(true)}
+                            className="w-full bg-[#192126] text-white py-4 rounded-2xl font-bold text-lg mb-4 hover:bg-[#2a3740] transition-colors"
+                        >
+                            Withdraw Money
+                        </button>
+                    ) : (
+                        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-4">
+                            <div className="flex gap-3">
+                                <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                                <div>
+                                    <p className="font-bold text-yellow-900 text-sm mb-1">Cannot Withdraw</p>
+                                    {eligibility.currentPoints < 1000 && (
+                                        <p className="text-yellow-700 text-xs">
+                                            Minimum 1000 points required. You need {1000 - eligibility.currentPoints} more points.
+                                        </p>
+                                    )}
+                                    {eligibility.hasPendingWithdrawal && (
+                                        <p className="text-yellow-700 text-xs">You have a pending withdrawal request.</p>
+                                    )}
+                                    {eligibility.weeklyLimitHit && (
+                                        <p className="text-yellow-700 text-xs">
+                                            Next withdrawal available on {new Date(eligibility.nextEligibleDate).toLocaleDateString()}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                        <div className="absolute top-3 right-3 bg-[#192126] text-white text-[10px] font-bold px-2 py-1 rounded-full z-0 group-hover:opacity-0 transition-opacity">
-                            COMING SOON
-                        </div>
-                    </div>
-                ))}
+                    )}
+                </>
+            )}
+
+            {/* Info Card */}
+            <div className="bg-gray-50 rounded-2xl p-4 mb-4">
+                <h3 className="font-bold text-sm mb-3 text-[#192126]">How it works</h3>
+                <ul className="space-y-2 text-xs text-gray-600">
+                    <li className="flex gap-2">
+                        <span>•</span>
+                        <span>1000 points = ₹100</span>
+                    </li>
+                    <li className="flex gap-2">
+                        <span>•</span>
+                        <span>Minimum withdrawal: 1000 points</span>
+                    </li>
+                    <li className="flex gap-2">
+                        <span>•</span>
+                        <span>One withdrawal per week</span>
+                    </li>
+                    <li className="flex gap-2">
+                        <span>•</span>
+                        <span>Instant UPI transfer after approval</span>
+                    </li>
+                </ul>
             </div>
-            */}
+
+            {/* History Button */}
+            <button
+                onClick={() => setShowHistory(true)}
+                className="w-full border-2 border-gray-200 py-3 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+            >
+                <History className="w-4 h-4" />
+                Withdrawal History
+            </button>
+
+            {/* Modals */}
+            {showWithdrawModal && (
+                <WithdrawModal
+                    userId={userId}
+                    maxPoints={eligibility?.maxWithdrawable || 0}
+                    onClose={() => setShowWithdrawModal(false)}
+                    onSuccess={() => {
+                        setShowWithdrawModal(false);
+                        fetchEligibility();
+                    }}
+                />
+            )}
+
+            {showHistory && (
+                <WithdrawHistory
+                    userId={userId}
+                    onClose={() => setShowHistory(false)}
+                />
+            )}
         </div>
     );
 };

@@ -380,6 +380,7 @@ export default function Home() {
                         {step === 16 && <Dashboard
                             name={name}
                             points={points}
+                            userId={userId || undefined}
                             planData={planData}
                             planReadyTime={planReadyTime}
                             onCompleteProfile={() => setStep(1)}

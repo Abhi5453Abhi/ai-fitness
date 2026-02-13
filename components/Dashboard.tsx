@@ -36,6 +36,7 @@ interface DailyPlan {
 interface DashboardProps {
     name: string;
     points: number;
+    userId?: string;
     planData?: {
         message: string;
         goalSummary: string;
@@ -46,7 +47,7 @@ interface DashboardProps {
     onRefreshPoints?: () => void;
 }
 
-export function Dashboard({ name, points, planData, planReadyTime, onCompleteProfile, onRefreshPoints }: DashboardProps) {
+export function Dashboard({ name, points, userId, planData, planReadyTime, onCompleteProfile, onRefreshPoints }: DashboardProps) {
     const { t } = useLanguage();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isLogFoodOpen, setIsLogFoodOpen] = useState(false);
@@ -106,7 +107,7 @@ export function Dashboard({ name, points, planData, planReadyTime, onCompletePro
                     }} />
                 )}
                 {activeTab === 'store' && (
-                    <Store />
+                    <Store userId={userId || ''} currentPoints={points} />
                 )}
 
                 {/* Bottom Navigation */}

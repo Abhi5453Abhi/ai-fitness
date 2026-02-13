@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { users, pushUpAttempts } from '@/db/schema';
+import { users, pushUpAttempts, pointsTransactions } from '@/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 
 export async function GET(req: Request) {
@@ -12,7 +12,7 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: "UserId required" }, { status: 400 });
         }
 
-        // Calculate points dynamically from approved attempts
+        // Calculate earned points from approved attempts
         // 1 Rep = 2.5 Points
         const result = await db
             .select({
@@ -22,11 +22,25 @@ export async function GET(req: Request) {
             .where(eq(pushUpAttempts.userId, userId));
 
         const totalReps = Number(result[0]?.totalReps) || 0;
-        const calculatedPoints = totalReps * 2.5;
+        const earnedPoints = totalReps * 2.5;
+
+        // Calculate withdrawn points from pointsTransactions
+        const withdrawnResult = await db
+            .select({
+                total: sql<number>`sum(${pointsTransactions.points})`
+            })
+            .from(pointsTransactions)
+            .where(and(
+                eq(pointsTransactions.userId, userId),
+                eq(pointsTransactions.type, 'withdraw')
+            ));
+
+        const withdrawnPoints = Number(withdrawnResult[0]?.total) || 0;
+        const currentPoints = earnedPoints - withdrawnPoints;
 
         return NextResponse.json({
             success: true,
-            points: calculatedPoints
+            points: currentPoints
         });
     } catch (error) {
         console.error("Sync Error:", error);
