@@ -12,6 +12,7 @@ export function WithdrawHistory({ userId, onClose }: WithdrawHistoryProps) {
 
     useEffect(() => {
         fetchHistory();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchHistory = async () => {

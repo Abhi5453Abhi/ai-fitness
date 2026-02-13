@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Wallet, History, AlertCircle } from 'lucide-react';
 import { WithdrawModal } from './WithdrawModal';
 import { WithdrawHistory } from './WithdrawHistory';
@@ -14,15 +14,16 @@ export const Store = ({ userId, currentPoints }: StoreProps) => {
     const [showHistory, setShowHistory] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        fetchEligibility();
-    }, [userId]);
-
-    const fetchEligibility = async () => {
+    const fetchEligibility = useCallback(async () => {
+        if (!userId) return;
         const res = await fetch(`/api/withdraw/eligibility?userId=${userId}`);
         const data = await res.json();
         setEligibility(data);
-    };
+    }, [userId]);
+
+    useEffect(() => {
+        fetchEligibility();
+    }, [fetchEligibility]);
 
     return (
         <div className="h-full overflow-y-auto pb-24 p-6">

@@ -7,13 +7,14 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const status = searchParams.get('status');
 
-    let query = db.select().from(withdrawals);
-    
-    if (status) {
-        query = query.where(eq(withdrawals.status, status as any));
-    }
-
-    const allWithdrawals = await query.orderBy(desc(withdrawals.requestedAt));
+    const allWithdrawals = status
+        ? await db.select()
+            .from(withdrawals)
+            .where(eq(withdrawals.status, status as any))
+            .orderBy(desc(withdrawals.requestedAt))
+        : await db.select()
+            .from(withdrawals)
+            .orderBy(desc(withdrawals.requestedAt));
 
     return NextResponse.json(allWithdrawals);
 }
