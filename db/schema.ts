@@ -29,7 +29,7 @@ export const withdrawals = pgTable('withdrawals', {
     id: serial('id').primaryKey(),
     userId: text('user_id').notNull(), // Phone number (matches userId in pushUpAttempts)
     points: integer('points').notNull(), // Points being withdrawn
-    amount: integer('amount').notNull(), // Amount in rupees (points / 10)
+    amount: integer('amount').notNull(), // Amount in rupees (points / 100, 1 point = ₹0.01)
     upiId: text('upi_id').notNull(), // User's UPI ID (e.g., user@paytm)
     status: text('status', { 
         enum: ['pending', 'approved', 'processing', 'completed', 'failed', 'rejected'] 

@@ -61,7 +61,7 @@ export function WithdrawModal({ userId, maxPoints, onClose, onSuccess }: Withdra
                         >
                             {Array.from({ length: Math.floor(maxPoints / 1000) }, (_, i) => (i + 1) * 1000).map(p => (
                                 <option key={p} value={p}>
-                                    {p} points = ₹{p / 10}
+                                    {p} points = ₹{(p / 100).toFixed(2)}
                                 </option>
                             ))}
                         </select>

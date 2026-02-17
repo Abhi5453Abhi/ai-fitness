@@ -16,7 +16,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Points must be minimum 1000 and in multiples of 1000" }, { status: 400 });
     }
 
-    const amount = points / 10; // 1000 points = 100 rupees
+    const amount = points / 100; // 1 point = ₹0.01, 100 points = ₹1
 
     const withdrawal = await db.insert(withdrawals).values({
         userId,
