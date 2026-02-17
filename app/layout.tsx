@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Outfit } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 import { LanguageProvider } from "@/components/LanguageContext";
 import { Analytics } from "@vercel/analytics/react"
@@ -21,16 +22,15 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <head>
+            <body className={`${outfit.className} antialiased`} suppressHydrationWarning>
                 {/* Propeller Ads Multitag */}
-                <script 
-                    src="https://quge5.com/88/tag.min.js" 
-                    data-zone="212033" 
-                    async 
+                <Script
+                    src="https://quge5.com/88/tag.min.js"
+                    data-zone="212033"
+                    strategy="afterInteractive"
                     data-cfasync="false"
                 />
-            </head>
-            <body className={`${outfit.className} antialiased`} suppressHydrationWarning>
+                
                 <PostHogProvider>
                     <WorkoutAIProvider>
                         <LanguageProvider>
