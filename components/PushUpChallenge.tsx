@@ -1,6 +1,7 @@
 import { ArrowLeft, Play, Info, Users, Clock, History, CheckCircle, XCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { useChallengeStats } from '@/hooks/useChallengeStats';
 import { PushUpCounter } from './PushUpCounter';
+import { PropellerInterstitial } from './ads/PropellerInterstitial';
 import { useState, useEffect } from 'react';
 
 interface PushUpChallengeProps {
@@ -24,6 +25,7 @@ export function PushUpChallenge({ onBack, onRefreshPoints, initialTodayAttempts 
     const [todayAttempts, setTodayAttempts] = useState(initialTodayAttempts); // Use initial from parent
     const [loading, setLoading] = useState(false); // Start false, we have initial data
     const [lastResult, setLastResult] = useState<{ count: number; points: number } | null>(null);
+    const [showAd, setShowAd] = useState(false); // Trigger interstitial ad after workout
 
     // Fetch all-time history (for display only)
     const fetchHistory = (isManual = false) => {
@@ -78,6 +80,9 @@ export function PushUpChallenge({ onBack, onRefreshPoints, initialTodayAttempts 
                     const points = count * 2.5;
                     setLastResult({ count, points });
                     setView('report'); // Show report screen
+                    
+                    // 🎯 Show interstitial ad after workout
+                    setShowAd(true);
 
                     // 3. Save to Backend in Background
                     let userId = localStorage.getItem('userId');
@@ -129,12 +134,19 @@ export function PushUpChallenge({ onBack, onRefreshPoints, initialTodayAttempts 
                         onClick={() => {
                             setView('instructions');
                             setLastResult(null);
+                            setShowAd(false); // Reset ad trigger
                         }}
                         className="w-full py-4 rounded-xl bg-[#BBF246] text-[#192126] font-black text-lg hover:bg-[#a6d93b] active:scale-[0.98] transition-all relative z-10"
                     >
                         CONTINUE
                     </button>
                 </div>
+                
+                {/* 🎯 Propeller Interstitial Ad (shows after workout) */}
+                <PropellerInterstitial 
+                    trigger={showAd} 
+                    onAdShown={() => console.log('Interstitial ad shown')} 
+                />
             </div>
         );
     }

@@ -8,6 +8,7 @@ import { BottomNav } from './BottomNav';
 import { ChallengeSection } from './ChallengeSection';
 import { PushUpChallenge } from './PushUpChallenge';
 import { Store } from './Store';
+import { PropellerNativeBanner } from './ads/PropellerNativeBanner';
 
 import { WorkoutAIProvider } from './WorkoutAIProvider';
 
@@ -94,6 +95,11 @@ export function Dashboard({ name, points, userId, planData, planReadyTime, onCom
                         <Zap className="w-4 h-4 text-[#BBF246] fill-[#BBF246]" />
                         <span className="font-black text-sm">{points}</span>
                     </div>
+                </div>
+
+                {/* 🎯 Propeller Native Banner Ad */}
+                <div className="px-6 pb-4">
+                    <PropellerNativeBanner className="rounded-2xl overflow-hidden bg-gray-50" />
                 </div>
 
                 {/* Main Content Area */}

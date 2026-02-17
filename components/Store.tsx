@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Wallet, History, AlertCircle } from 'lucide-react';
 import { WithdrawModal } from './WithdrawModal';
 import { WithdrawHistory } from './WithdrawHistory';
+import { PropellerBanner } from './ads/PropellerBanner';
 
 interface StoreProps {
     userId: string;
@@ -41,8 +42,13 @@ export const Store = ({ userId, currentPoints }: StoreProps) => {
                 </div>
                 <div className="flex items-center gap-2 bg-black/10 rounded-full px-3 py-1.5 w-fit">
                     <Wallet className="w-4 h-4" />
-                    <span className="text-sm font-bold">= ₹{(currentPoints / 10).toFixed(0)}</span>
+                    <span className="text-sm font-bold">= ₹{(currentPoints / 100).toFixed(2)}</span>
                 </div>
+            </div>
+
+            {/* 🎯 Propeller Banner Ad */}
+            <div className="mb-6">
+                <PropellerBanner className="rounded-2xl overflow-hidden" />
             </div>
 
             {/* Eligibility Status */}
@@ -87,7 +93,7 @@ export const Store = ({ userId, currentPoints }: StoreProps) => {
                 <ul className="space-y-2 text-xs text-gray-600">
                     <li className="flex gap-2">
                         <span>•</span>
-                        <span>1000 points = ₹100</span>
+                        <span>100 points = ₹1 (1 point = ₹0.01)</span>
                     </li>
                     <li className="flex gap-2">
                         <span>•</span>
