@@ -21,6 +21,15 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
+            <head>
+                {/* Propeller Ads Multitag */}
+                <script 
+                    src="https://quge5.com/88/tag.min.js" 
+                    data-zone="212033" 
+                    async 
+                    data-cfasync="false"
+                />
+            </head>
             <body className={`${outfit.className} antialiased`} suppressHydrationWarning>
                 <PostHogProvider>
                     <WorkoutAIProvider>
