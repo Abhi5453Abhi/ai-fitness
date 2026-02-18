@@ -23,13 +23,24 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${outfit.className} antialiased`} suppressHydrationWarning>
-                {/* Propeller Ads Multitag */}
+                {/* ADS DISABLED - Too intrusive for users */}
+                {/* Propeller Ads Multitag 
                 <Script
                     src="https://quge5.com/88/tag.min.js"
                     data-zone="212033"
                     strategy="afterInteractive"
                     data-cfasync="false"
                 />
+                */}
+                
+                {/* Google AdSense 
+                <Script
+                    async
+                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6891301397326863"
+                    crossOrigin="anonymous"
+                    strategy="afterInteractive"
+                />
+                */}
                 
                 <PostHogProvider>
                     <WorkoutAIProvider>
